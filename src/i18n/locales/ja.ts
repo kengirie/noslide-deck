@@ -68,9 +68,6 @@ export const ja: Translation = {
     more: 'もっと見る',
     empty: 'まだデッキがありません。上のシートにPDFを置いて最初の1冊を。',
   },
-  staticViewer: {
-    openInApp: 'nostr slide deckで開く',
-  },
   footer: {
     note: 'スライドは公開リレーとBlossomサーバーに保存されます。運営に依存せず、持ち運べます。',
     source: 'ソースコード',

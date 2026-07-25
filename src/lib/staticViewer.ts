@@ -20,10 +20,7 @@ export interface StaticViewerInput {
   pagePaths: string[];
   /** Absolute URL of the original PDF (Blossom) */
   pdfUrl: string;
-  /** In-app URL for the full experience (comments, zaps) */
-  appUrl: string;
   labels: {
-    openInApp: string;
     downloadPdf: string;
   };
 }
@@ -132,7 +129,6 @@ export function renderStaticViewerHtml(input: StaticViewerInput): string {
   const canonical = escapeHtml(assertHttpUrl(input.canonicalUrl));
   const ogImage = escapeHtml(assertHttpUrl(input.ogImageUrl));
   const pdfUrl = escapeHtml(assertHttpUrl(input.pdfUrl));
-  const appUrl = escapeHtml(assertHttpUrl(input.appUrl));
   const pages = input.pagePaths.map(assertRelativePath);
   const pagesJson = JSON.stringify(pages).replaceAll('<', '\\u003c');
 
@@ -196,7 +192,6 @@ noscript .sheet-list img{margin-bottom:1rem;border:1px solid var(--rule)}
   <h1>${title}</h1>
   ${summary ? `<p class="summary">${summary}</p>` : ''}
   <div class="links">
-    <a href="${appUrl}">${escapeHtml(input.labels.openInApp)}</a>
     <a href="${pdfUrl}" download>${escapeHtml(input.labels.downloadPdf)}</a>
   </div>
 </main>

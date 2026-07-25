@@ -18,11 +18,6 @@ export function deckGatewayUrl(pubkeyHex: string, deckId: string): string {
   return `https://${pubkeyToBase36(pubkeyHex)}${deckId}.${GATEWAY_DOMAIN}/`;
 }
 
-/** Absolute in-app URL honoring the deploy base path (e.g. GitHub Pages subpath). */
-export function absoluteAppUrl(path: string): string {
-  return `${location.origin}${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
-}
-
 /** Profiles are delegated to an existing Nostr client instead of a custom page. */
 export function profileUrl(npub: string): string {
   return `https://lumilumi.app/${npub}`;

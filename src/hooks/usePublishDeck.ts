@@ -8,7 +8,7 @@ import { uploadToServers, type BlossomServerResult } from '@/lib/blossomMulti';
 import { DECK_KIND, buildDeckEvent, parseHashtagInput } from '@/lib/deckEvent';
 import { buildNamedSiteManifest, buildServerList, type SitePath } from '@/lib/nsite';
 import type { RenderedDeck } from '@/lib/pdfRender';
-import { LOOKUP_RELAYS, absoluteAppUrl, deckGatewayUrl } from '@/lib/siteConfig';
+import { LOOKUP_RELAYS, deckGatewayUrl } from '@/lib/siteConfig';
 import { renderEmbedHtml, renderStaticViewerHtml } from '@/lib/staticViewer';
 import { useAppContext } from './useAppContext';
 import { useCurrentUser } from './useCurrentUser';
@@ -177,9 +177,7 @@ export function usePublishDeck() {
             ogImageUrl: `${gatewayUrl}thumb.jpg`,
             pagePaths: pageUploads.map((_, i) => `pages/${String(i + 1).padStart(3, '0')}.webp`),
             pdfUrl: pdfUpload.url,
-            appUrl: absoluteAppUrl(`${npub}/${meta.slug}`),
             labels: {
-              openInApp: t('staticViewer.openInApp'),
               downloadPdf: t('deck.downloadPdf'),
             },
           });

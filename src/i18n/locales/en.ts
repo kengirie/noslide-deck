@@ -64,9 +64,6 @@ export const en = {
     more: 'Load more',
     empty: 'No decks yet — drop a PDF above and be the first.',
   },
-  staticViewer: {
-    openInApp: 'Open in nostr slide deck',
-  },
   footer: {
     note: 'Your decks live on public relays and Blossom servers — portable, mirrorable, yours.',
     source: 'Source',
