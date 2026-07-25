@@ -11,7 +11,6 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import type { usePdfPages } from '@/hooks/usePdfPages';
 import { usePublishDeck, type PublishResult } from '@/hooks/usePublishDeck';
 import { asciiSlug, isValidDeckId, randomDeckId } from '@/lib/deckId';
-import { absoluteAppUrl } from '@/lib/siteConfig';
 import { cn } from '@/lib/utils';
 import { DeckMetadataForm, type DeckMetadata } from './DeckMetadataForm';
 
@@ -34,11 +33,11 @@ function PublishSuccess({
   onNew: () => void;
 }) {
   const { t } = useTranslation();
-  const [copied, setCopied] = useState<'link' | 'naddr' | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  const copy = async (kind: 'link' | 'naddr', value: string) => {
+  const copyLink = async (value: string) => {
     await navigator.clipboard.writeText(value);
-    setCopied(kind);
+    setCopied(true);
   };
 
   return (
@@ -56,10 +55,10 @@ function PublishSuccess({
             <Button
               size="sm"
               className="shrink-0 bg-seal text-seal-foreground hover:bg-seal/90"
-              onClick={() => copy('link', result.gatewayUrl!)}
+              onClick={() => copyLink(result.gatewayUrl!)}
             >
-              {copied === 'link' ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
-              {copied === 'link' ? t('publish.copied') : t('publish.copyLink')}
+              {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
+              {copied ? t('publish.copied') : t('publish.copyLink')}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">{t('publish.gatewayDelay')}</p>
@@ -73,10 +72,6 @@ function PublishSuccess({
       <div className="flex flex-col items-center gap-3 sm:flex-row">
         <Button asChild variant={result.gatewayUrl ? 'outline' : 'default'}>
           <Link to={`/${result.npub}/${result.identifier}`}>{t('publish.openDeck')}</Link>
-        </Button>
-        <Button variant="outline" onClick={() => copy('naddr', absoluteAppUrl(result.naddr))}>
-          {copied === 'naddr' ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
-          {copied === 'naddr' ? t('publish.copied') : t('publish.copyNaddr')}
         </Button>
       </div>
       <Button variant="ghost" onClick={onNew}>

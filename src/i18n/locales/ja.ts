@@ -43,7 +43,6 @@ export const ja: Translation = {
     successDesc: 'デッキは公開リレーとBlossomサーバーに保存されました。',
     openDeck: 'デッキページを開く',
     copyLink: '共有リンクをコピー',
-    copyNaddr: 'naddrをコピー',
     copied: 'コピーしました',
     publishAnother: '別のデッキを公開',
     gatewayDelay: '共有ページが有効になるまで最大10分ほどかかることがあります。',

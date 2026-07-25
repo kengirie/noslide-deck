@@ -39,7 +39,6 @@ export const en = {
     successDesc: 'Your deck now lives on public relays and Blossom servers.',
     openDeck: 'Open deck page',
     copyLink: 'Copy share link',
-    copyNaddr: 'Copy naddr',
     copied: 'Copied',
     publishAnother: 'Publish another deck',
     gatewayDelay: 'The share page can take up to ~10 minutes to go live on the gateway.',
