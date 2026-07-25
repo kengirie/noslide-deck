@@ -52,6 +52,80 @@ function assertRelativePath(value: string): string {
   return value;
 }
 
+/**
+ * Chrome-less viewer for <iframe> embeds, published alongside index.html as
+ * /embed.html. Same relative page paths; a small bottom bar links back to the
+ * canonical deck page.
+ */
+export function renderEmbedHtml(input: Pick<StaticViewerInput, 'title' | 'canonicalUrl' | 'pagePaths'>): string {
+  const title = escapeHtml(input.title);
+  const canonical = escapeHtml(assertHttpUrl(input.canonicalUrl));
+  const pages = input.pagePaths.map(assertRelativePath);
+  const pagesJson = JSON.stringify(pages).replaceAll('<', '\\u003c');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${title}</title>
+<meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:#161411;display:flex;flex-direction:column;overflow:hidden;font-family:ui-monospace,monospace}
+.stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:10px;cursor:pointer}
+.stage img{max-width:100%;max-height:100%;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.bar{height:30px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 10px;font-size:11px;letter-spacing:.1em;color:#98938a}
+.bar a{color:#ece9e2;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar a:hover{color:#e8543a}
+.bar button{background:none;border:0;color:#ece9e2;font-size:15px;cursor:pointer;padding:0 6px;line-height:1}
+.bar button:disabled{opacity:.3;cursor:default}
+.left{display:flex;align-items:center;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="stage" id="stage"><img id="slide" src="${escapeHtml(pages[0] ?? '')}" alt="${title}"></div>
+<div class="bar">
+  <span class="left">
+    <button id="prev" aria-label="Previous">&#8249;</button>
+    <button id="next" aria-label="Next">&#8250;</button>
+    <span id="folio"></span>
+  </span>
+  <a href="${canonical}" target="_blank" rel="noopener">${title} &#8599;</a>
+</div>
+<script>
+(function(){
+  var pages=${pagesJson};
+  var i=0;
+  var img=document.getElementById('slide');
+  var folio=document.getElementById('folio');
+  var prev=document.getElementById('prev');
+  var next=document.getElementById('next');
+  function pad(n){return String(n).padStart(2,'0')}
+  function render(){
+    img.src=pages[i];
+    folio.textContent=pad(i+1)+' / '+pad(pages.length);
+    prev.disabled=i<=0;
+    next.disabled=i>=pages.length-1;
+    if(pages[i+1]){(new Image()).src=pages[i+1]}
+  }
+  function go(d){var n=i+d;if(n>=0&&n<pages.length){i=n;render()}}
+  prev.addEventListener('click',function(e){e.stopPropagation();go(-1)});
+  next.addEventListener('click',function(e){e.stopPropagation();go(1)});
+  document.getElementById('stage').addEventListener('click',function(){go(1)});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight')go(1);
+    if(e.key==='ArrowLeft')go(-1);
+  });
+  render();
+})();
+</script>
+</body>
+</html>
+`;
+}
+
 export function renderStaticViewerHtml(input: StaticViewerInput): string {
   const title = escapeHtml(input.title);
   const summary = escapeHtml(input.summary);

@@ -57,6 +57,7 @@ export const en = {
     nextPage: 'Next page',
     fullscreen: 'Fullscreen',
     shareOnX: 'Post on X',
+    copyEmbed: 'Copy embed code',
   },
   feed: {
     recent: 'Recent decks',

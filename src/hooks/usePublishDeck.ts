@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { getEffectiveBlossomServers } from '@/lib/appBlossom';
 import { uploadToServers, type BlossomServerResult } from '@/lib/blossomMulti';
 import { DECK_KIND, buildDeckEvent, parseHashtagInput } from '@/lib/deckEvent';
-import { ROOT_SITE_KIND, buildRootManifest, buildServerList, type SitePath } from '@/lib/nsite';
+import { buildNamedSiteManifest, buildServerList, type SitePath } from '@/lib/nsite';
 import type { RenderedDeck } from '@/lib/pdfRender';
 import { LOOKUP_RELAYS, absoluteAppUrl, deckGatewayUrl } from '@/lib/siteConfig';
-import { renderStaticViewerHtml } from '@/lib/staticViewer';
+import { renderEmbedHtml, renderStaticViewerHtml } from '@/lib/staticViewer';
 import { useAppContext } from './useAppContext';
 import { useCurrentUser } from './useCurrentUser';
 import { useNostrPublish } from './useNostrPublish';
@@ -164,11 +164,12 @@ export function usePublishDeck() {
           npub,
         };
 
-        // Static nsite mirror for OG cards. Failures here must not kill the
-        // publish — the deck is already live in-app.
+        // Static nsite mirror for OG cards: the deck becomes its own NIP-5A
+        // named site (kind 35128, d = deck id). Failures here must not kill
+        // the publish — the deck is already live in-app.
         setState((prev) => ({ ...prev, step: 'mirroring' }));
         try {
-          const gatewayUrl = deckGatewayUrl(npub, meta.slug);
+          const gatewayUrl = deckGatewayUrl(user.pubkey, meta.slug);
           const html = renderStaticViewerHtml({
             title: meta.title,
             summary: meta.summary,
@@ -190,28 +191,37 @@ export function usePublishDeck() {
             signer: user.signer,
           });
 
+          const embedHtml = renderEmbedHtml({
+            title: meta.title,
+            canonicalUrl: gatewayUrl,
+            pagePaths: pageUploads.map((_, i) => `pages/${String(i + 1).padStart(3, '0')}.webp`),
+          });
+          const embedUpload = await uploadToServers({
+            blob: new Blob([embedHtml], { type: 'text/html' }),
+            name: 'embed.html',
+            type: 'text/html',
+            servers,
+            signer: user.signer,
+          });
+
           const deckPaths: SitePath[] = [
-            { path: `/${meta.slug}/index.html`, sha256: htmlUpload.sha256 },
-            { path: `/${meta.slug}/thumb.jpg`, sha256: thumbUpload.sha256 },
+            { path: '/index.html', sha256: htmlUpload.sha256 },
+            { path: '/embed.html', sha256: embedUpload.sha256 },
+            { path: '/thumb.jpg', sha256: thumbUpload.sha256 },
             ...pageUploads.map((page, i) => ({
-              path: `/${meta.slug}/pages/${String(i + 1).padStart(3, '0')}.webp`,
+              path: `/pages/${String(i + 1).padStart(3, '0')}.webp`,
               sha256: page.sha256,
             })),
           ];
 
-          let existing = null;
-          try {
-            const [event] = await nostr.query(
-              [{ kinds: [ROOT_SITE_KIND], authors: [user.pubkey], limit: 1 }],
-              { signal: AbortSignal.timeout(3000) },
-            );
-            existing = event ?? null;
-          } catch {
-            // Treat as no existing nsite
-          }
-
           const manifest = await publishEvent(
-            await buildRootManifest(existing, meta.slug, deckPaths, servers),
+            await buildNamedSiteManifest({
+              identifier: meta.slug,
+              paths: deckPaths,
+              servers,
+              title: meta.title,
+              description: meta.summary || undefined,
+            }),
           );
 
           // Gateways discover the user's Blossom servers via kind 10063;

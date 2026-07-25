@@ -13,7 +13,7 @@ The event records **both a URL and a SHA-256 hash for every file**. The URL says
 ### Tags
 
 | tag | required | description |
-|---|---|---|
+| --- | --- | --- |
 | `d` | yes | Deck identifier: `[a-z0-9-]`, max 13 characters (kept compatible with NIP-5A named-site identifiers) |
 | `title` | yes | Deck title |
 | `summary` | no | Short description (also mirrored in `content`) |
@@ -64,4 +64,4 @@ Standard NIPs are used as-is; nothing app-specific:
 
 ## Static mirror (nsite)
 
-At publish time the client also renders a static HTML viewer with Open Graph meta tags baked in and publishes it as an nsite (NIP-5A) under the path `/<d>/index.html`, so that share links unfurl into cards without any server-side rendering. This is an optimization for web crawlers; the deck event above remains the source of truth.
+At publish time the client also renders a static HTML viewer with Open Graph meta tags baked in and publishes it as a NIP-5A **named site** (kind `35128`) whose `d` tag equals the deck identifier, with paths `/index.html`, `/thumb.jpg`, and `/pages/NNN.webp`. Gateways serve it at the canonical named-site address `https://<pubkeyB36><d>.<gateway>/` (which is why deck identifiers follow the named-site `d` rules: `^[a-z0-9-]{1,13}$`, not ending with `-`). Share links unfurl into cards without any server-side rendering; the deck event above remains the source of truth, and the user's root nsite (kind `15128`) is never touched.

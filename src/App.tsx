@@ -37,9 +37,7 @@ const defaultConfig: AppConfig = {
   relayMetadata: APP_RELAYS,
   blossomServerMetadata: {
     servers: [
-      'https://blossom.ditto.pub/',
-      'https://blossom.dreamith.to/',
-      'https://blossom.primal.net/',
+      'https://blossoml3001.site/',
     ],
     updatedAt: 0,
   },

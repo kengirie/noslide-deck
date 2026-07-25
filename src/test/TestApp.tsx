@@ -30,7 +30,7 @@ export function TestApp({ children }: TestAppProps) {
       updatedAt: 0,
     },
     blossomServerMetadata: {
-      servers: ['https://blossom.primal.net/'],
+      servers: ['https://blossoml3001.site/'],
       updatedAt: 0,
     },
     useAppBlossomServers: true,

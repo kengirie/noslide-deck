@@ -19,20 +19,25 @@ import NotFound from './NotFound';
 /** X's intent logo is overkill — a simple label button matches the print look. */
 function SharePanel({ deck }: { deck: Deck }) {
   const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
-  const shareUrl = deckGatewayUrl(nip19.npubEncode(deck.pubkey), deck.identifier);
+  const [copied, setCopied] = useState<'link' | 'embed' | null>(null);
+  const shareUrl = deckGatewayUrl(deck.pubkey, deck.identifier);
   const intentUrl = `https://x.com/intent/post?text=${encodeURIComponent(deck.title)}&url=${encodeURIComponent(shareUrl)}`;
+  const embedCode = `<iframe src="${shareUrl}embed.html" width="640" height="390" style="border:0;max-width:100%;" allowfullscreen title="${deck.title.replaceAll('"', '&quot;')}"></iframe>`;
 
-  const copy = async () => {
-    await navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
+  const copy = async (kind: 'link' | 'embed', value: string) => {
+    await navigator.clipboard.writeText(value);
+    setCopied(kind);
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button variant="outline" size="sm" onClick={copy}>
-        {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
-        {copied ? t('publish.copied') : t('publish.copyLink')}
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      <Button variant="outline" size="sm" onClick={() => copy('link', shareUrl)}>
+        {copied === 'link' ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
+        {copied === 'link' ? t('publish.copied') : t('publish.copyLink')}
+      </Button>
+      <Button variant="outline" size="sm" onClick={() => copy('embed', embedCode)}>
+        {copied === 'embed' ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
+        {copied === 'embed' ? t('publish.copied') : t('deck.copyEmbed')}
       </Button>
       <Button asChild variant="outline" size="sm">
         <a href={intentUrl} target="_blank" rel="noreferrer">
