@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CropMarks } from '@/components/CropMarks';
 import { LoginArea } from '@/components/auth/LoginArea';
-import { SealMark } from '@/components/layout/SealMark';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -42,7 +41,6 @@ function PublishSuccess({
 
   return (
     <section className="container flex flex-col items-center gap-6 py-24 text-center">
-      <SealMark className="size-14 text-2xl" />
       <h1 className="font-display text-3xl font-bold">{t('publish.successTitle')}</h1>
       <p className="max-w-md text-sm text-muted-foreground">{t('publish.successDesc')}</p>
 
