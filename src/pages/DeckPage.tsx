@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check, Copy, Download } from 'lucide-react';
 import { nip19 } from 'nostr-tools';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSeoMeta } from '@unhead/react';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthor } from '@/hooks/useAuthor';
 import { useDeck } from '@/hooks/useDeck';
 import type { Deck } from '@/lib/deckEvent';
-import { deckGatewayUrl } from '@/lib/siteConfig';
+import { deckGatewayUrl, profileUrl } from '@/lib/siteConfig';
 import NotFound from './NotFound';
 
 /** X's intent logo is overkill — a simple label button matches the print look. */
@@ -55,7 +55,12 @@ function AuthorCard({ pubkey }: { pubkey: string }) {
   const name = metadata?.name ?? `${npub.slice(0, 12)}…`;
 
   return (
-    <Link to={`/${npub}`} className="flex items-center gap-3">
+    <a
+      href={profileUrl(npub)}
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center gap-3"
+    >
       <Avatar className="size-10 rounded-[3px]">
         <AvatarImage src={metadata?.picture} alt="" />
         <AvatarFallback className="rounded-[3px] font-display">{name.slice(0, 2)}</AvatarFallback>
@@ -66,7 +71,7 @@ function AuthorCard({ pubkey }: { pubkey: string }) {
           {npub.slice(0, 16)}…
         </span>
       </span>
-    </Link>
+    </a>
   );
 }
 
