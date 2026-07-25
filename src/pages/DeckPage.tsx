@@ -96,11 +96,11 @@ function DeckArticle({ deck }: { deck: Deck }) {
       <div className="mx-4 mt-8 border-t pt-6 sm:mx-6">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h1 className="font-display text-2xl font-bold leading-snug sm:text-3xl">
+            <h1 className="break-words font-display text-2xl font-bold leading-snug sm:text-3xl [overflow-wrap:anywhere]">
               {deck.title}
             </h1>
             {deck.summary && (
-              <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-3 max-w-prose break-words text-sm leading-relaxed text-muted-foreground">
                 {deck.summary}
               </p>
             )}
