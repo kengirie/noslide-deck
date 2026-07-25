@@ -4,7 +4,7 @@ type Translation = { [K in keyof typeof en]: Record<keyof (typeof en)[K], string
 
 export const ja: Translation = {
   app: {
-    name: '紙芝居',
+    name: 'nostr slide deck',
     tagline: 'Nostrのスライド共有',
   },
   hero: {
@@ -69,7 +69,7 @@ export const ja: Translation = {
     empty: 'まだデッキがありません。上のシートにPDFを置いて最初の1冊を。',
   },
   staticViewer: {
-    openInApp: '紙芝居で開く',
+    openInApp: 'nostr slide deckで開く',
   },
   footer: {
     note: 'スライドは公開リレーとBlossomサーバーに保存されます。運営に依存せず、持ち運べます。',

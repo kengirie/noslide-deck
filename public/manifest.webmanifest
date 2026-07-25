@@ -1,6 +1,6 @@
 {
-  "name": "Kamishibai — Slides on Nostr",
-  "short_name": "Kamishibai",
+  "name": "nostr slide deck",
+  "short_name": "nostr slide deck",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FAF9F6",

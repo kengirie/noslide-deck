@@ -1,4 +1,4 @@
-# Kamishibai（紙芝居） — Slides on Nostr
+# nostr slide deck
 
 **投げ銭できる Speaker Deck。** PDF をドロップすると、共有できるスライドページが Nostr 上に公開されます。
 
@@ -27,7 +27,7 @@ Deploys to GitHub Pages automatically on push to `main`.
 
 ### One-time operator setup
 
-Register the NIP-89 app handler (lets other Nostr clients offer "Open with Kamishibai" for deck events):
+Register the NIP-89 app handler (lets other Nostr clients offer "Open with nostr slide deck" for deck events):
 
 ```sh
 NSEC=nsec1... node scripts/publish-nip89.mjs

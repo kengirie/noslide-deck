@@ -10,7 +10,8 @@ export function AppHeader() {
 
   return (
     <header className="border-b-2 border-foreground">
-      <div className="container flex h-16 items-center justify-between gap-3">
+      {/* flex-wrap: the controls drop to a second row on narrow screens */}
+      <div className="container flex min-h-16 flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2">
         <Link to="/" className="flex min-w-0 items-center gap-3">
           <SealMark />
           <span className="min-w-0">
@@ -22,7 +23,7 @@ export function AppHeader() {
             </span>
           </span>
         </Link>
-        <div className="flex items-center gap-1 sm:gap-3">
+        <div className="ml-auto flex items-center gap-1 sm:gap-3">
           <LanguageToggle />
           <ThemeToggle />
           <LoginArea />

@@ -41,7 +41,7 @@ function FeedSection({ title, author, showEmpty }: { title: string; author?: str
         <>
           <ul className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {decks.map((deck) => (
-              <li key={`${deck.pubkey}:${deck.identifier}`}>
+              <li key={`${deck.pubkey}:${deck.identifier}`} className="min-w-0">
                 <DeckCard deck={deck} />
               </li>
             ))}

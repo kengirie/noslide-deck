@@ -108,7 +108,7 @@ export function buildDeckEvent(input: DeckEventInput): DeckEventTemplate {
 
   tags.push([
     'alt',
-    `Slide deck "${input.title.trim()}" (${input.pages.length} pages), published with Kamishibai`,
+    `Slide deck "${input.title.trim()}" (${input.pages.length} pages), published with nostr slide deck`,
   ]);
 
   return { kind: DECK_KIND, content: input.summary?.trim() ?? '', tags };

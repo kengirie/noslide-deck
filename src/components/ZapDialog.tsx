@@ -253,7 +253,7 @@ export function ZapDialog({ target, children, className }: ZapDialogProps) {
   useEffect(() => {
     if (target) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setComment('Zapped with Kamishibai!');
+      setComment('Zapped with nostr slide deck!');
     }
   }, [target]);
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Publish the NIP-89 application handler for Kamishibai (kind 35891 decks).
+ * Publish the NIP-89 application handler for nostr slide deck (kind 35891 decks).
  *
  * Run once with the operator key:
  *   NSEC=nsec1... node scripts/publish-nip89.mjs
  *
  * Other Nostr clients that encounter a kind 35891 event can then offer
- * "Open with Kamishibai".
+ * "Open with nostr slide deck".
  */
 import { finalizeEvent, nip19 } from 'nostr-tools';
 
@@ -31,16 +31,16 @@ const handler = finalizeEvent({
   kind: 31990,
   created_at: now,
   content: JSON.stringify({
-    name: 'Kamishibai',
-    display_name: 'Kamishibai — Slides on Nostr',
+    name: 'nostr slide deck',
+    display_name: 'nostr slide deck',
     about: 'Drop a PDF, get a shareable slide page. Page-flip viewer, OG cards, zaps.',
     website: APP_URL,
   }),
   tags: [
-    ['d', 'kamishibai'],
+    ['d', 'nostr-slide-deck'],
     ['k', String(DECK_KIND)],
     ['web', `${APP_URL}/<bech32>`, 'naddr'],
-    ['alt', 'Handler information for the Kamishibai slide deck app'],
+    ['alt', 'Handler information for the nostr slide deck app'],
   ],
 }, sk);
 
@@ -50,7 +50,7 @@ const recommendation = finalizeEvent({
   content: '',
   tags: [
     ['d', String(DECK_KIND)],
-    ['a', `31990:${handler.pubkey}:kamishibai`, RELAYS[0], 'web'],
+    ['a', `31990:${handler.pubkey}:nostr-slide-deck`, RELAYS[0], 'web'],
     ['alt', `Recommended app for kind ${DECK_KIND} slide decks`],
   ],
 }, sk);
@@ -68,4 +68,4 @@ for (const event of [handler, recommendation]) {
   })));
   console.log(`kind ${event.kind}:`, results.join(' | '));
 }
-console.log('handler naddr:', nip19.naddrEncode({ kind: 31990, pubkey: handler.pubkey, identifier: 'kamishibai' }));
+console.log('handler naddr:', nip19.naddrEncode({ kind: 31990, pubkey: handler.pubkey, identifier: 'nostr-slide-deck' }));
