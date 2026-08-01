@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSeoMeta } from '@unhead/react';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { DeleteDeckButton } from '@/components/deck/DeleteDeckButton';
 import { SlideViewer } from '@/components/deck/SlideViewer';
 import { ZapButton } from '@/components/ZapButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -136,6 +137,7 @@ function DeckArticle({ deck }: { deck: Deck }) {
               </Button>
             </div>
             <SharePanel deck={deck} />
+            <DeleteDeckButton deck={deck} />
           </div>
         </div>
       </div>

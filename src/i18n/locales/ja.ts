@@ -61,6 +61,17 @@ export const ja: Translation = {
     fullscreen: '全画面表示',
     shareOnX: 'Xでシェア',
     copyEmbed: '埋め込みコードをコピー',
+    delete: '削除',
+    deleteConfirmTitle: 'このデッキを削除しますか？',
+    deleteConfirmDesc:
+      'リレーには削除リクエストを送ります。すべての複製が消えることは保証されません。共有ページは最大1時間ほど表示が残ることがあります。',
+    deleteCancel: 'キャンセル',
+    deleteConfirm: '削除する',
+    deleteRequesting: '削除リクエスト発行中…',
+    deletePurging: 'ファイル削除中 {{done}} / {{total}}…',
+    deleted: '削除しました',
+    deletePartial: '一部のファイルを削除できませんでした（{{count}}件）',
+    deleteFailed: '削除に失敗しました',
   },
   feed: {
     recent: '新着デッキ',

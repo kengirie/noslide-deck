@@ -57,6 +57,17 @@ export const en = {
     fullscreen: 'Fullscreen',
     shareOnX: 'Post on X',
     copyEmbed: 'Copy embed code',
+    delete: 'Delete',
+    deleteConfirmTitle: 'Delete this deck?',
+    deleteConfirmDesc:
+      'A deletion request is sent to the relays — removal of every copy cannot be guaranteed. The share page may stay visible for up to an hour.',
+    deleteCancel: 'Cancel',
+    deleteConfirm: 'Delete',
+    deleteRequesting: 'Sending deletion request…',
+    deletePurging: 'Deleting files {{done}} of {{total}}…',
+    deleted: 'Deck deleted',
+    deletePartial: 'Some files could not be deleted ({{count}})',
+    deleteFailed: 'Deletion failed',
   },
   feed: {
     recent: 'Recent decks',
