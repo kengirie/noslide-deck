@@ -59,7 +59,6 @@ Standard NIPs are used as-is; nothing app-specific:
 
 - **Comments**: NIP-22 (kind 1111) replies referencing the deck's address
 - **Reactions**: NIP-25 targeting the deck event
-- **Zaps**: NIP-57 targeting the deck's `a` address
 - **App handler**: NIP-89 (kind 31990) announcing this app as a handler for kind 35891
 
 ## Deletion

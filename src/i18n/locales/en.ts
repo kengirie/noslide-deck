@@ -6,14 +6,14 @@ export const en = {
   hero: {
     eyebrow: 'Slides on Nostr',
     title: 'Drop a PDF, get a slide page worth sharing.',
-    lead: 'Links unfurl into a card of your first slide. Readers flip through the pages and send you sats. No sign-up — your Nostr key is you.',
+    lead: 'Links unfurl into a card of your first slide. Readers flip through the pages right in the browser. No sign-up — your Nostr key is you.',
     dropTitle: 'Drop your PDF here',
     dropHint: 'or click to choose a file',
   },
   features: {
     cards: 'Card previews on X and Slack',
     viewer: 'Page-flip reader',
-    zaps: 'Zaps straight to the speaker',
+    embeds: 'Embeds anywhere with an iframe',
   },
   publish: {
     rendering: 'Setting the type…',

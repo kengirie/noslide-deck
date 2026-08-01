@@ -7,7 +7,6 @@ import { useSeoMeta } from '@unhead/react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { DeleteDeckButton } from '@/components/deck/DeleteDeckButton';
 import { SlideViewer } from '@/components/deck/SlideViewer';
-import { ZapButton } from '@/components/ZapButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -120,15 +119,12 @@ function DeckArticle({ deck }: { deck: Deck }) {
 
           <div className="flex shrink-0 flex-col items-start gap-4 sm:items-end">
             <AuthorCard pubkey={deck.pubkey} />
-            <div className="flex items-center gap-2">
-              <ZapButton target={deck.event} className="text-seal" showCount />
-              <Button asChild variant="outline" size="sm">
-                <a href={deck.pdf.url} download target="_blank" rel="noreferrer">
-                  <Download className="size-4" aria-hidden />
-                  {t('deck.downloadPdf')}
-                </a>
-              </Button>
-            </div>
+            <Button asChild variant="outline" size="sm">
+              <a href={deck.pdf.url} download target="_blank" rel="noreferrer">
+                <Download className="size-4" aria-hidden />
+                {t('deck.downloadPdf')}
+              </a>
+            </Button>
             <SharePanel deck={deck} />
             <DeleteDeckButton deck={deck} />
           </div>

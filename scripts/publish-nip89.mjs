@@ -33,7 +33,7 @@ const handler = finalizeEvent({
   content: JSON.stringify({
     name: 'nostr slide deck',
     display_name: 'nostr slide deck',
-    about: 'Drop a PDF, get a shareable slide page. Page-flip viewer, OG cards, zaps.',
+    about: 'Drop a PDF, get a shareable slide page. Page-flip viewer, OG cards, embeds.',
     website: APP_URL,
   }),
   tags: [

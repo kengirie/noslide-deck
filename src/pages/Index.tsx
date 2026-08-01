@@ -10,7 +10,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useDeckFeed } from '@/hooks/useDeckFeed';
 import { usePdfPages } from '@/hooks/usePdfPages';
 
-const FEATURES = ['cards', 'viewer', 'zaps'] as const;
+const FEATURES = ['cards', 'viewer', 'embeds'] as const;
 
 function FeedSection({ title, author, showEmpty }: { title: string; author?: string; showEmpty?: boolean }) {
   const { t } = useTranslation();

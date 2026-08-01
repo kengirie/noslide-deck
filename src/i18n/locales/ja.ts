@@ -10,14 +10,14 @@ export const ja: Translation = {
   hero: {
     eyebrow: 'Nostrのスライド共有',
     title: 'PDFを置くだけ。共有できるスライドページに。',
-    lead: 'リンクを貼れば1枚目がカードで開く。読む人はページをめくり、zapで応援できる。アカウント登録は不要 — Nostrの鍵があなたです。',
+    lead: 'リンクを貼れば1枚目がカードで開く。読む人はブラウザでそのままページをめくれる。アカウント登録は不要 — Nostrの鍵があなたです。',
     dropTitle: 'ここにPDFをドロップ',
     dropHint: 'クリックしてファイルを選ぶこともできます',
   },
   features: {
     cards: 'X・Slackでカード展開',
     viewer: 'ページ送りビューア',
-    zaps: '発表者へ直接zap',
+    embeds: 'iframeでどこにでも埋め込み',
   },
   publish: {
     rendering: '組版中…',

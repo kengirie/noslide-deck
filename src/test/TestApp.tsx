@@ -3,7 +3,6 @@ import { createHead, UnheadProvider } from '@unhead/react/client';
 import { BrowserRouter } from 'react-router-dom';
 import { NostrLoginProvider } from '@nostrify/react/login';
 import NostrProvider from '@/components/NostrProvider';
-import { NWCProvider } from '@/contexts/NWCContext';
 import { AppProvider } from '@/components/AppProvider';
 import { AppConfig } from '@/contexts/AppContext';
 
@@ -42,11 +41,9 @@ export function TestApp({ children }: TestAppProps) {
         <QueryClientProvider client={queryClient}>
           <NostrLoginProvider storageKey='test-login'>
             <NostrProvider>
-              <NWCProvider>
-                <BrowserRouter>
-                  {children}
-                </BrowserRouter>
-              </NWCProvider>
+              <BrowserRouter>
+                {children}
+              </BrowserRouter>
             </NostrProvider>
           </NostrLoginProvider>
         </QueryClientProvider>
