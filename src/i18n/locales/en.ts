@@ -55,7 +55,6 @@ export const en = {
     prevPage: 'Previous page',
     nextPage: 'Next page',
     fullscreen: 'Fullscreen',
-    shareOnX: 'Post on X',
     copyEmbed: 'Copy embed code',
     delete: 'Delete',
     deleteConfirmTitle: 'Delete this deck?',

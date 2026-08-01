@@ -59,7 +59,6 @@ export const ja: Translation = {
     prevPage: '前のページ',
     nextPage: '次のページ',
     fullscreen: '全画面表示',
-    shareOnX: 'Xでシェア',
     copyEmbed: '埋め込みコードをコピー',
     delete: '削除',
     deleteConfirmTitle: 'このデッキを削除しますか？',
