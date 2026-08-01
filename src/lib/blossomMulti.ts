@@ -118,3 +118,73 @@ export async function uploadToServers(opts: UploadToServersOptions): Promise<Blo
 
   return { sha256, size: blob.size, url: first.url, results };
 }
+
+export interface BlossomDeleteResult {
+  sha256: string;
+  /** True when every server no longer has the blob (deleted or already gone) */
+  ok: boolean;
+  results: BlossomServerResult[];
+}
+
+export interface DeleteFromServersOptions {
+  hashes: string[];
+  servers: string[];
+  signer: NostrSigner;
+  /** Human-readable purpose shown by signers (BUD-11 content requirement) */
+  reason: string;
+  onProgress?: (done: number, total: number) => void;
+  signal?: AbortSignal;
+}
+
+/**
+ * Multi-server Blossom delete (BUD-12). One BUD-11 auth token covers every
+ * hash (multiple `x` tags make it valid for each DELETE individually), so the
+ * user signs once no matter how many pages the deck has. The token is scoped
+ * to our servers with `server` tags — an unscoped delete token could be
+ * replayed against any server holding the same blobs.
+ */
+export async function deleteFromServers(opts: DeleteFromServersOptions): Promise<BlossomDeleteResult[]> {
+  const { hashes, servers, signer, reason, onProgress, signal } = opts;
+  if (hashes.length === 0) return [];
+  const now = Math.floor(Date.now() / 1000);
+
+  const auth = await signer.signEvent({
+    kind: 24242,
+    content: reason,
+    created_at: now,
+    tags: [
+      ['t', 'delete'],
+      ...hashes.map((sha256) => ['x', sha256]),
+      ...servers.map((server) => ['server', new URL(server).hostname]),
+      ['expiration', String(now + 600)],
+    ],
+  });
+  const authorization = `Nostr ${encodeAuthEvent(auth)}`;
+
+  const outcomes: BlossomDeleteResult[] = [];
+  let done = 0;
+  for (const sha256 of hashes) {
+    const results: BlossomServerResult[] = await Promise.all(
+      servers.map(async (server): Promise<BlossomServerResult> => {
+        try {
+          const response = await fetch(new URL(`/${sha256}`, server), {
+            method: 'DELETE',
+            headers: { authorization },
+            signal,
+          });
+          // 404 means the blob is already gone — the outcome the user wanted
+          if (response.ok || response.status === 404) return { server, ok: true };
+          const text = await response.text();
+          return { server, ok: false, error: `${response.status} ${text.slice(0, 120)}` };
+        } catch (err) {
+          return { server, ok: false, error: err instanceof Error ? err.message : String(err) };
+        }
+      }),
+    );
+    outcomes.push({ sha256, ok: results.every((r) => r.ok), results });
+    done += 1;
+    onProgress?.(done, hashes.length);
+  }
+
+  return outcomes;
+}
