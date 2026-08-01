@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useNostr } from '@nostrify/react';
+import { DELETION_KIND, coveredByDeletion } from '@/lib/deckDelete';
 import { DECK_KIND, deckAddress, parseDeckEvent, type Deck } from '@/lib/deckEvent';
 
 const PAGE_SIZE = 12;
@@ -23,10 +24,31 @@ export function useDeckFeed(author?: string) {
       const events = await nostr.query([filter], {
         signal: AbortSignal.any([signal, AbortSignal.timeout(2500)]),
       });
-      return events
+      const decks = events
         .map(parseDeckEvent)
         .filter((deck): deck is Deck => deck !== null)
         .sort((a, b) => b.event.created_at - a.event.created_at);
+
+      // NIP-09: relays that kept a deleted deck must not leak it into the feed
+      if (decks.length > 0) {
+        try {
+          const deletions = await nostr.query(
+            [{
+              kinds: [DELETION_KIND],
+              authors: [...new Set(decks.map((deck) => deck.pubkey))],
+              '#a': decks.map(deckAddress),
+              limit: decks.length * 2,
+            }],
+            { signal: AbortSignal.any([signal, AbortSignal.timeout(2500)]) },
+          );
+          if (deletions.length > 0) {
+            return decks.filter((deck) => !coveredByDeletion(deck.event, deletions));
+          }
+        } catch {
+          // Deletion lookup is best-effort; compliant relays already dropped them
+        }
+      }
+      return decks;
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.length < PAGE_SIZE) return undefined;
