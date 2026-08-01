@@ -86,19 +86,12 @@ export function PublishSection({ pdf, onReset }: { pdf: PdfPages; onReset: () =>
   const { user } = useCurrentUser();
   const pub = usePublishDeck();
   const [selected, setSelected] = useState(1);
-  const [slugTouched, setSlugTouched] = useState(false);
+  // The deck id is seeded from the file name once; editing the title never
+  // rewrites it — the id is part of the share URL and must not drift silently.
   const [meta, setMeta] = useState<DeckMetadata>(() => {
     const title = titleFromFile(pdf.file);
     return { title, summary: '', hashtags: '', slug: asciiSlug(title) || randomDeckId() };
   });
-
-  const handleMetaChange = (next: DeckMetadata) => {
-    if (!slugTouched && next.title !== meta.title) {
-      const derived = asciiSlug(next.title);
-      if (derived) next = { ...next, slug: derived };
-    }
-    setMeta(next);
-  };
 
   if (pdf.status === 'rendering') {
     const { done, total } = pdf.progress;
@@ -161,11 +154,7 @@ export function PublishSection({ pdf, onReset }: { pdf: PdfPages; onReset: () =>
       <div className="order-2 lg:order-1 lg:col-span-4">
         <h1 className="font-display text-2xl font-bold">{t('publish.formTitle')}</h1>
         <div className="mt-6">
-          <DeckMetadataForm
-            value={meta}
-            onChange={handleMetaChange}
-            onSlugEdited={() => setSlugTouched(true)}
-          />
+          <DeckMetadataForm value={meta} onChange={setMeta} />
         </div>
         <div className="mt-8 space-y-3">
           {user ? (

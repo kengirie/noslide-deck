@@ -17,11 +17,9 @@ export interface DeckMetadata {
 interface DeckMetadataFormProps {
   value: DeckMetadata;
   onChange: (next: DeckMetadata) => void;
-  /** Called when the user edits the slug by hand (stops auto-derivation). */
-  onSlugEdited?: () => void;
 }
 
-export function DeckMetadataForm({ value, onChange, onSlugEdited }: DeckMetadataFormProps) {
+export function DeckMetadataForm({ value, onChange }: DeckMetadataFormProps) {
   const { t } = useTranslation();
   const slugInvalid = value.slug.length > 0 && !isValidDeckId(value.slug);
 
@@ -63,10 +61,7 @@ export function DeckMetadataForm({ value, onChange, onSlugEdited }: DeckMetadata
           className="font-mono"
           maxLength={DECK_ID_MAX_LENGTH}
           value={value.slug}
-          onChange={(e) => {
-            onSlugEdited?.();
-            onChange({ ...value, slug: e.target.value.toLowerCase() });
-          }}
+          onChange={(e) => onChange({ ...value, slug: e.target.value.toLowerCase() })}
           aria-invalid={slugInvalid}
         />
         <p className={cn('text-xs', slugInvalid ? 'text-destructive' : 'text-muted-foreground')}>
