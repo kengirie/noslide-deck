@@ -62,6 +62,24 @@ Standard NIPs are used as-is; nothing app-specific:
 - **Zaps**: NIP-57 targeting the deck's `a` address
 - **App handler**: NIP-89 (kind 31990) announcing this app as a handler for kind 35891
 
+## Deletion
+
+Deleting a deck is a single [NIP-09](https://github.com/nostr-protocol/nips/blob/master/09.md) request (kind `5`) with two `a` tags — the deck event and its named-site manifest share the same identifier:
+
+```json
+{
+  "kind": 5,
+  "tags": [
+    ["a", "35891:<pubkey>:<d>"],
+    ["a", "35128:<pubkey>:<d>"],
+    ["k", "35891"],
+    ["k", "35128"]
+  ]
+}
+```
+
+The client then removes the deck's blobs from the author's Blossom servers via [BUD-12](https://github.com/hzrd149/blossom/blob/master/buds/12.md) `DELETE /<sha256>`, using one [BUD-11](https://github.com/hzrd149/blossom/blob/master/buds/11.md) token that lists every hash in `x` tags and is scoped with `server` tags. Blobs still referenced by the author's other decks are spared, since Blossom storage is content-addressed and shared. Clients hide decks covered by such a request even when a relay still serves them.
+
 ## Static mirror (nsite)
 
 At publish time the client also renders a static HTML viewer with Open Graph meta tags baked in and publishes it as a NIP-5A **named site** (kind `35128`) whose `d` tag equals the deck identifier, with paths `/index.html`, `/thumb.jpg`, and `/pages/NNN.webp`. Gateways serve it at the canonical named-site address `https://<pubkeyB36><d>.<gateway>/` (which is why deck identifiers follow the named-site `d` rules: `^[a-z0-9-]{1,13}$`, not ending with `-`). Share links unfurl into cards without any server-side rendering; the deck event above remains the source of truth, and the user's root nsite (kind `15128`) is never touched.
