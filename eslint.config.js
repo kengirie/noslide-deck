@@ -73,4 +73,13 @@ export default defineConfig(
       "custom/require-webmanifest": "off",
     },
   },
+  {
+    name: "napplet/dev-shell",
+    files: ["napplet/dev/shell.html"],
+    rules: {
+      // The test shell mirrors a real NIP-5D shell, whose runtime injection
+      // is inline scripting by design.
+      "custom/no-inline-script": "off",
+    },
+  },
 );

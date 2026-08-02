@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Dev test shell that loads the built napplet the way a real NIP-5D shell does">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Kamishibai napplet test shell">
+        <meta property="og:description" content="Dev test shell for the Kamishibai viewer napplet">
+        <title>Kamishibai napplet test shell</title>
+        <style>
+            body { margin: 0; height: 100vh; display: flex; flex-direction: column; font-family: monospace; }
+            header { padding: 6px 10px; font-size: 12px; background: #222; color: #ddd; }
+            iframe { flex: 1; border: 0; }
+        </style>
+    </head>
+    <body>
+        <header>test shell — dist-napplet/index.html via sandbox+srcdoc+baseline CSP</header>
+        <iframe
+            id="frame"
+            sandbox="allow-scripts"
+            title="napplet"
+        ></iframe>
+        <script>
+            // Mirrors how a real shell loads a napplet: verified bytes into
+            // srcdoc, runtime injection (window.napplet) and the NIP-5D
+            // baseline CSP prepended to <head>, sandbox="allow-scripts" only.
+            const PUBKEY = 'a'.repeat(64);
+            const IDENTIFIER = 'mock-deck';
+
+            const MOCK = `
+<script>
+parent.postMessage({ debug: 'mock script booted' }, '*');
+window.addEventListener('error', function (e) {
+  parent.postMessage({ debug: 'error: ' + e.message + ' @' + e.filename + ':' + e.lineno }, '*');
+});
+window.addEventListener('unhandledrejection', function (e) {
+  parent.postMessage({ debug: 'rejection: ' + e.reason }, '*');
+});
+function dumpApp(label) {
+  var app = document.getElementById('app');
+  parent.postMessage({ debug: 'app ' + label + ': ' + (app ? app.innerHTML.slice(0, 300) : 'missing') }, '*');
+}
+window.addEventListener('load', function () {
+  dumpApp('at load');
+  var n = 0;
+  var timer = setInterval(function () {
+    dumpApp('tick ' + n);
+    if (++n >= 4) clearInterval(timer);
+  }, 700);
+});
+(function () {
+  var PUBKEY = '${PUBKEY}';
+  var IDENTIFIER = '${IDENTIFIER}';
+  var pages = [];
+  for (var i = 1; i <= 5; i++) {
+    pages.push({
+      url: 'https://blossom.example/page-' + i + '.webp',
+      sha: String(i).repeat(64).slice(0, 64),
+    });
+  }
+  var tags = [
+    ['d', IDENTIFIER],
+    ['title', '紙芝居 shell-harness deck'],
+    ['url', 'https://blossom.example/mock.pdf'],
+    ['x', 'b'.repeat(64)],
+    ['m', 'application/pdf'],
+    ['size', '12345'],
+  ];
+  pages.forEach(function (p) {
+    tags.push(['imeta', 'url ' + p.url, 'x ' + p.sha, 'm image/webp', 'dim 1600x900']);
+  });
+  var event = {
+    id: 'c'.repeat(64), pubkey: PUBKEY, kind: 35891, created_at: 1700000000,
+    content: 'Served by the dev test shell.', tags: tags, sig: 'd'.repeat(64),
+  };
+  function svg(n) {
+    var s = '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900">'
+      + '<rect width="1600" height="900" fill="#faf9f6"/>'
+      + '<rect x="40" y="40" width="1520" height="820" fill="none" stroke="#dcd9d2" stroke-width="2"/>'
+      + '<text x="800" y="470" font-size="220" text-anchor="middle" fill="#1c1a17" font-family="serif">' + n + '<\\/text>'
+      + '<rect x="1500" y="800" width="24" height="24" fill="#d7381e"/><\\/svg>';
+    return new Blob([s], { type: 'image/svg+xml' });
+  }
+  window.napplet = {
+    outbox: {
+      query: function (filters) {
+        parent.postMessage({ debug: 'outbox.query called' }, '*');
+        var hit = filters.some(function (f) { return (f.kinds || []).indexOf(35891) !== -1; });
+        return Promise.resolve({ events: hit ? [{ event: event }] : [] });
+      },
+    },
+    resource: {
+      bytes: function (url) {
+        var m = /page-(\\d+)\\.webp$/.exec(url) || /^blossom:sha256:(\\d)/.exec(url);
+        if (!m) return Promise.reject(new Error('no bytes for ' + url));
+        return Promise.resolve(svg(Number(m[1])));
+      },
+    },
+    inc: {
+      on: function (topic, handler) {
+        parent.postMessage({ debug: 'inc.on subscribed: ' + topic }, '*');
+        if (topic === 'napplet:note/open') {
+          setTimeout(function () {
+            handler({ sender: 'test-shell', payload: { kind: 35891, pubkey: PUBKEY, identifier: IDENTIFIER } });
+          }, 300);
+        }
+        return { close: function () {} };
+      },
+    },
+  };
+})();
+<\/script>
+<script type="module">parent.postMessage({ debug: 'module script ran' }, '*');<\/script>`;
+
+            const CSP = '<meta http-equiv="Content-Security-Policy" content="'
+                + "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; "
+                + "img-src data: blob:; font-src data:; connect-src 'none'; worker-src 'none'; "
+                + "child-src 'none'; frame-src 'none'; media-src 'none'; object-src 'none'; "
+                + "manifest-src 'none'; base-uri 'none'; form-action 'none'" + '">';
+
+            window.addEventListener('message', (e) => {
+                if (e.data && e.data.debug) {
+                    const line = document.createElement('div');
+                    line.textContent = e.data.debug;
+                    document.querySelector('header').append(line);
+                }
+            });
+
+            fetch('/dist-napplet/index.html')
+                .then((r) => {
+                    if (!r.ok) throw new Error('run `npm run build:napplet` first');
+                    return r.text();
+                })
+                .then((html) => {
+                    document.getElementById('frame').srcdoc
+                        = html.replace('<head>', '<head>' + CSP + MOCK);
+                })
+                .catch((e) => { document.querySelector('header').textContent = String(e); });
+        </script>
+    </body>
+</html>

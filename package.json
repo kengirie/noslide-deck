@@ -8,6 +8,7 @@
     "build": "npm i --silent && vite build -l error && cp dist/index.html dist/404.html && echo 'Project built successfully!'",
     "dev:napplet": "vite -c napplet/vite.config.ts",
     "build:napplet": "vite build -l error -c napplet/vite.config.ts",
+    "e2e:napplet": "node napplet/dev/e2e.mjs",
     "test": "npm i --silent && tsc --noEmit && eslint --cache && vitest run --reporter=dot --silent && vite build -l error && cp dist/index.html dist/404.html && echo 'All tests passed!'"
   },
   "dependencies": {
@@ -63,6 +64,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
     "jsdom": "^29.1.0",
+    "playwright-core": "^1.62.1",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.0",
