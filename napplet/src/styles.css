@@ -1,0 +1,219 @@
+/*
+ * Paper-and-ink palette, ported from the site (src/index.css). Web fonts are
+ * unavailable under the shell CSP (font-src data: only), so the display face
+ * falls back to system mincho stacks. The `theme` NAP may override --paper and
+ * --ink at runtime; the vermilion seal stays as brand.
+ */
+:root {
+  --paper: #faf9f6;
+  --ink: #1c1a17;
+  --rule: #dcd9d2;
+  --gray: #6e6a63;
+  --seal: #d7381e;
+  --font-display: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+  --font-ui: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161411;
+    --ink: #ece9e2;
+    --rule: #302d27;
+    --gray: #98938a;
+    --seal: #e8543a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  overflow: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+/* --- viewer --- */
+
+.viewer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.slide {
+  max-width: 100%;
+  max-height: 100%;
+  background: #fff;
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.45);
+}
+
+.slide.pending {
+  opacity: 0.4;
+  transition: opacity 0.15s;
+}
+
+.page-error {
+  position: absolute;
+  inset: auto auto 50% 50%;
+  transform: translate(-50%, 50%);
+  font-size: 0.8rem;
+  color: var(--gray);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 0.5rem 1rem;
+}
+
+.bar {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px;
+  border-top: 1px solid var(--rule);
+  font-size: 12px;
+}
+
+.bar .nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.bar button {
+  background: none;
+  border: 0;
+  color: var(--ink);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+}
+
+.bar button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.bar button:hover:not(:disabled) {
+  color: var(--seal);
+}
+
+.folio {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--gray);
+  margin-left: 6px;
+}
+
+.deck-title {
+  font-family: var(--font-display);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.bar .pdf {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gray);
+  flex-shrink: 0;
+}
+
+/* --- non-viewer states (waiting / loading / error) --- */
+
+.state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.state .seal-mark {
+  width: 10px;
+  height: 10px;
+  background: var(--seal);
+}
+
+.state h1 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.state p {
+  color: var(--gray);
+  font-size: 0.85rem;
+  max-width: 40ch;
+}
+
+.state form {
+  display: flex;
+  gap: 0.5rem;
+  width: min(28rem, 90%);
+}
+
+.state input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  padding: 0.45rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  border-radius: 2px;
+}
+
+.state input:focus {
+  outline: none;
+  border-color: var(--gray);
+}
+
+.state button {
+  background: none;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  border-radius: 2px;
+}
+
+.state button:hover {
+  border-color: var(--seal);
+  color: var(--seal);
+}

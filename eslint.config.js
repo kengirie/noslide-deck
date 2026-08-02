@@ -9,7 +9,7 @@ import htmlEslint from "@html-eslint/eslint-plugin";
 import customRules from "./eslint-rules/index.js";
 
 export default defineConfig(
-  globalIgnores(["dist", ".agents"]),
+  globalIgnores(["dist", "dist-napplet", ".agents"]),
   {
     name: "app/ts",
     files: ["**/*.{ts,tsx}"],
@@ -62,6 +62,15 @@ export default defineConfig(
       "@html-eslint/use-baseline": "off",
       "custom/no-inline-script": "error",
       "custom/require-webmanifest": "error",
+    },
+  },
+  {
+    name: "napplet/html",
+    files: ["napplet/**/*.html"],
+    rules: {
+      // The napplet is injected via iframe.srcdoc under a CSP with
+      // `manifest-src 'none'`; a webmanifest link would be dead weight.
+      "custom/require-webmanifest": "off",
     },
   },
 );
