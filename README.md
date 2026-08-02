@@ -33,6 +33,15 @@ Register the NIP-89 app handler (lets other Nostr clients offer "Open with nostr
 NSEC=nsec1... node scripts/publish-nip89.mjs
 ```
 
+Publish the NIP-5D viewer napplet (lets NIP-5D shells open deck events inline; see NIP.md):
+
+```sh
+npm run build:napplet
+NSEC=nsec1... node scripts/publish-napplet.mjs   # --dry-run to inspect first
+```
+
+`npm run dev:napplet` serves the napplet standalone with a mock shell; `npm run e2e:napplet` drives the built artifact inside a sandboxed test shell (see `napplet/dev/e2e.mjs` for setup).
+
 ## Stack
 
 React 19 · Vite · TailwindCSS 4 · [Nostrify](https://nostrify.dev) · pdf.js · [MKStack](https://soapbox.pub/mkstack) template.
