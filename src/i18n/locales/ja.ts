@@ -76,6 +76,16 @@ export const ja: Translation = {
     like: 'いいね',
     failed: 'いいねを送れませんでした',
   },
+  comments: {
+    title: 'コメント',
+    placeholder: 'コメントを追加…',
+    submit: '投稿',
+    posting: '投稿中…',
+    empty: 'まだコメントはありません。',
+    loginToComment: 'コメントにはNostrの鍵でログインしてください',
+    tooLong: 'コメントが長すぎます',
+    failed: 'コメントを投稿できませんでした',
+  },
   feed: {
     recent: '新着デッキ',
     mine: '自分のデッキ',

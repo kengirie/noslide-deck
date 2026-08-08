@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSeoMeta } from '@unhead/react';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { CommentSection } from '@/components/deck/CommentSection';
 import { DeleteDeckButton } from '@/components/deck/DeleteDeckButton';
 import { ReactionButton } from '@/components/deck/ReactionButton';
 import { SlideViewer } from '@/components/deck/SlideViewer';
@@ -134,6 +135,8 @@ function DeckArticle({ deck }: { deck: Deck }) {
           </div>
         </div>
       </div>
+
+      <CommentSection deck={deck} />
     </article>
   );
 }

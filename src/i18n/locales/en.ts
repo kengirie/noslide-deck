@@ -72,6 +72,16 @@ export const en = {
     like: 'Like',
     failed: 'Could not send your like',
   },
+  comments: {
+    title: 'Comments',
+    placeholder: 'Add a comment…',
+    submit: 'Post',
+    posting: 'Posting…',
+    empty: 'No comments yet.',
+    loginToComment: 'Sign in with your Nostr key to comment',
+    tooLong: 'Comment is too long',
+    failed: 'Could not post your comment',
+  },
   feed: {
     recent: 'Recent decks',
     mine: 'My decks',
