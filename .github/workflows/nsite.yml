@@ -1,9 +1,10 @@
 name: Publish to nsite (Nostr/Blossom)
 
 on:
-  # Publish on every push to main, mirroring the GitHub Pages deploy.
-  push:
-    branches: ["main"]
+  # Publish only when a release is published (i.e. a tag is released).
+  # GitHub Pages still deploys on every push to main via deploy.yml.
+  release:
+    types: [published]
 
   # Also allow manual runs from the Actions tab.
   workflow_dispatch:
