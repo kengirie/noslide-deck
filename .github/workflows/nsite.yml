@@ -1,0 +1,55 @@
+name: Publish to nsite (Nostr/Blossom)
+
+on:
+  # Publish on every push to main, mirroring the GitHub Pages deploy.
+  push:
+    branches: ["main"]
+
+  # Also allow manual runs from the Actions tab.
+  workflow_dispatch:
+
+# Allow only one concurrent publish so overlapping runs don't race each other.
+concurrency:
+  group: "nsite"
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies and build
+        # No VITE_BASE here: an nsite is served from the npub root ("/"),
+        # unlike the GitHub Pages build which lives under /nostr-slide-deck/.
+        run: |
+          npm install
+          npm run build
+
+      - name: Publish to Nostr/Blossom
+        uses: sandwichfarm/nsite-action@v0.5.1
+        with:
+          # Raw Nostr private key (nsec1... or hex) stored as the NOSTR_SEC
+          # repository secret. Use a dedicated key for this project so a leak
+          # is contained. A leaked key cannot be revoked, only rotated.
+          sec: ${{ secrets.NOSTR_SEC }}
+          directory: "./dist"
+          version: "v0.27.0"
+          # Publish as a named NIP-5A site (kind 35128 manifest) under this
+          # identifier, instead of the root npub site.
+          name: "slides"
+          # SPA fallback so deep links resolve to the app entry point.
+          fallback: "/index.html"
+          relays: |
+            wss://relay.primal.net
+            wss://nos.lol
+            wss://nostr.mom
+          servers: |
+            https://blossoml3001.site
