@@ -72,6 +72,10 @@ export const ja: Translation = {
     deletePartial: '一部のファイルを削除できませんでした（{{count}}件）',
     deleteFailed: '削除に失敗しました',
   },
+  reactions: {
+    like: 'いいね',
+    failed: 'いいねを送れませんでした',
+  },
   feed: {
     recent: '新着デッキ',
     mine: '自分のデッキ',

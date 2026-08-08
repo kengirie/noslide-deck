@@ -68,6 +68,10 @@ export const en = {
     deletePartial: 'Some files could not be deleted ({{count}})',
     deleteFailed: 'Deletion failed',
   },
+  reactions: {
+    like: 'Like',
+    failed: 'Could not send your like',
+  },
   feed: {
     recent: 'Recent decks',
     mine: 'My decks',
