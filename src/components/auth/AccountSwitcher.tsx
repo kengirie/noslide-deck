@@ -32,8 +32,8 @@ export function AccountSwitcher({ onAddAccountClick }: AccountSwitcherProps) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <button className='flex items-center gap-2 h-10 p-1 pr-2.5 rounded-full hover:bg-accent transition-all text-foreground'>
-          <Avatar className='w-8 h-8'>
+        <button className='flex items-center gap-1 h-8 p-0.5 pr-1.5 rounded-full hover:bg-accent transition-all text-foreground'>
+          <Avatar className='w-7 h-7'>
             <AvatarImage
               src={currentUser.metadata.picture}
               alt={isCurrentUserPending ? '' : getDisplayName(currentUser)}

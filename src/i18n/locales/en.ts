@@ -1,6 +1,6 @@
 export const en = {
   app: {
-    name: 'nostr slide deck',
+    name: 'noslide deck',
     tagline: 'Slides on Nostr',
   },
   hero: {
