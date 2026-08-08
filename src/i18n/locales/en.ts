@@ -82,6 +82,9 @@ export const en = {
     tooLong: 'Comment is too long',
     failed: 'Could not post your comment',
   },
+  share: {
+    openInApp: 'Like or comment in the app:',
+  },
   feed: {
     recent: 'Recent decks',
     mine: 'My decks',

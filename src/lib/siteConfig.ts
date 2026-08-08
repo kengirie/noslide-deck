@@ -22,3 +22,34 @@ export function deckGatewayUrl(pubkeyHex: string, deckId: string): string {
 export function profileUrl(npub: string): string {
   return `https://lumilumi.app/${npub}`;
 }
+
+/** GitHub Pages deployment of the interactive app (VITE_BASE = /nostr-slide-deck/). */
+export const GH_PAGES_BASE = 'https://kengirie.github.io/nostr-slide-deck';
+
+/**
+ * The interactive app is also published as a named nsite ("slides"). Its gateway
+ * subdomain is `<pubkeyB36>slides`, reachable on any nsite gateway — we offer a
+ * couple so a reader can pick one that's up.
+ */
+export const SITE_NSITE_SUBDOMAIN = '39ohbfiu1ziyvxhwqdklupc0yrc4mcgmjpfe3w6vvz1gp6wg7hslides';
+export const APP_GATEWAYS = ['nsite.lol', 'nwb.tf'];
+
+export interface AppDeckLink {
+  label: string;
+  url: string;
+}
+
+/**
+ * Interactive-app URLs for a deck across every host, so the static share page
+ * can offer "open in the app to like/comment" links. Deck route: `/<npub>/<id>`.
+ */
+export function appDeckUrls(npub: string, deckId: string): AppDeckLink[] {
+  const path = `${npub}/${deckId}`;
+  return [
+    { label: 'GitHub Pages', url: `${GH_PAGES_BASE}/${path}` },
+    ...APP_GATEWAYS.map((gateway) => ({
+      label: gateway,
+      url: `https://${SITE_NSITE_SUBDOMAIN}.${gateway}/${path}`,
+    })),
+  ];
+}

@@ -86,6 +86,9 @@ export const ja: Translation = {
     tooLong: 'コメントが長すぎます',
     failed: 'コメントを投稿できませんでした',
   },
+  share: {
+    openInApp: 'アプリでいいね・コメント:',
+  },
   feed: {
     recent: '新着デッキ',
     mine: '自分のデッキ',

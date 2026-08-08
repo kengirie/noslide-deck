@@ -5,10 +5,10 @@ import type { DeckMetadata } from '@/components/publish/DeckMetadataForm';
 import { useTranslation } from 'react-i18next';
 import { getEffectiveBlossomServers } from '@/lib/appBlossom';
 import { uploadToServers, type BlossomServerResult } from '@/lib/blossomMulti';
-import { DECK_KIND, buildDeckEvent, parseHashtagInput } from '@/lib/deckEvent';
+import { DECK_KIND, buildDeckEvent, deckAddress, parseHashtagInput } from '@/lib/deckEvent';
 import { buildNamedSiteManifest, buildServerList, type SitePath } from '@/lib/nsite';
 import type { RenderedDeck } from '@/lib/pdfRender';
-import { LOOKUP_RELAYS, deckGatewayUrl } from '@/lib/siteConfig';
+import { LOOKUP_RELAYS, appDeckUrls, deckGatewayUrl } from '@/lib/siteConfig';
 import { renderEmbedHtml, renderStaticViewerHtml } from '@/lib/staticViewer';
 import { useAppContext } from './useAppContext';
 import { useCurrentUser } from './useCurrentUser';
@@ -177,8 +177,15 @@ export function usePublishDeck() {
             ogImageUrl: `${gatewayUrl}thumb.jpg`,
             pagePaths: pageUploads.map((_, i) => `pages/${String(i + 1).padStart(3, '0')}.webp`),
             pdfUrl: pdfUpload.url,
+            deckAddress: deckAddress({ pubkey: user.pubkey, identifier: meta.slug }),
+            relays: [...new Set(config.relayMetadata.relays.map((relay) => relay.url))],
+            appLinks: appDeckUrls(npub, meta.slug),
             labels: {
               downloadPdf: t('deck.downloadPdf'),
+              likes: t('reactions.like'),
+              openInApp: t('share.openInApp'),
+              comments: t('comments.title'),
+              noComments: t('comments.empty'),
             },
           });
           const htmlUpload = await uploadToServers({
@@ -256,7 +263,15 @@ export function usePublishDeck() {
         }));
       }
     },
-    [user, config.blossomServerMetadata, config.useAppBlossomServers, nostr, publishEvent, t],
+    [
+      user,
+      config.blossomServerMetadata,
+      config.useAppBlossomServers,
+      config.relayMetadata.relays,
+      nostr,
+      publishEvent,
+      t,
+    ],
   );
 
   return { ...state, publish, reset };
