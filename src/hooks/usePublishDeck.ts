@@ -186,6 +186,7 @@ export function usePublishDeck() {
               openInApp: t('share.openInApp'),
               comments: t('comments.title'),
               noComments: t('comments.empty'),
+              fullscreen: t('deck.fullscreen'),
             },
           });
           const htmlUpload = await uploadToServers({
@@ -200,6 +201,7 @@ export function usePublishDeck() {
             title: meta.title,
             canonicalUrl: gatewayUrl,
             pagePaths: pageUploads.map((_, i) => `pages/${String(i + 1).padStart(3, '0')}.webp`),
+            fullscreenLabel: t('deck.fullscreen'),
           });
           const embedUpload = await uploadToServers({
             blob: new Blob([embedHtml], { type: 'text/html' }),

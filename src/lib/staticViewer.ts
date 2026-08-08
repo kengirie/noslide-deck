@@ -32,6 +32,7 @@ export interface StaticViewerInput {
     openInApp: string;
     comments: string;
     noComments: string;
+    fullscreen: string;
   };
 }
 
@@ -72,9 +73,12 @@ function assertWsUrl(value: string): string {
  * /embed.html. Same relative page paths; a small bottom bar links back to the
  * canonical deck page.
  */
-export function renderEmbedHtml(input: Pick<StaticViewerInput, 'title' | 'canonicalUrl' | 'pagePaths'>): string {
+export function renderEmbedHtml(
+  input: Pick<StaticViewerInput, 'title' | 'canonicalUrl' | 'pagePaths'> & { fullscreenLabel: string },
+): string {
   const title = escapeHtml(input.title);
   const canonical = escapeHtml(assertHttpUrl(input.canonicalUrl));
+  const fsLabel = escapeHtml(input.fullscreenLabel);
   const pages = input.pagePaths.map(assertRelativePath);
   const pagesJson = JSON.stringify(pages).replaceAll('<', '\\u003c');
 
@@ -106,6 +110,7 @@ body{background:#161411;display:flex;flex-direction:column;overflow:hidden;font-
     <button id="prev" aria-label="Previous">&#8249;</button>
     <button id="next" aria-label="Next">&#8250;</button>
     <span id="folio"></span>
+    <button id="fs" aria-label="${fsLabel}" title="${fsLabel}">&#9974;</button>
   </span>
   <a href="${canonical}" target="_blank" rel="noopener">${title} &#8599;</a>
 </div>
@@ -133,6 +138,16 @@ body{background:#161411;display:flex;flex-direction:column;overflow:hidden;font-
     if(e.key==='ArrowRight')go(1);
     if(e.key==='ArrowLeft')go(-1);
   });
+  var fs=document.getElementById('fs');
+  var fsEnabled=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+  if(fs&&fsEnabled){
+    fs.addEventListener('click',function(e){
+      e.stopPropagation();
+      var d=document,el=d.documentElement;
+      if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d)}
+      else{(el.requestFullscreen||el.webkitRequestFullscreen).call(el)}
+    });
+  }else if(fs){fs.style.display='none'}
   render();
 })();
 </script>
@@ -193,6 +208,10 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:
 .bar button{background:none;border:1px solid var(--rule);color:var(--ink);padding:.4rem .9rem;cursor:pointer;font-size:1rem;border-radius:2px}
 .bar button:disabled{opacity:.3;cursor:default}
 .folio{font-family:ui-monospace,monospace;font-size:.75rem;letter-spacing:.15em;color:var(--gray)}
+.right{display:flex;align-items:center;gap:1rem}
+#fs{padding:.3rem .55rem;font-size:1.1rem;line-height:1}
+.sheet:fullscreen,.sheet:-webkit-full-screen{display:flex;align-items:center;justify-content:center;background:#000}
+.sheet:fullscreen img,.sheet:-webkit-full-screen img{width:auto;height:auto;max-width:100vw;max-height:100vh}
 h1{font-size:1.25rem;margin-top:1.5rem;font-weight:700;overflow-wrap:anywhere}
 p.summary{color:var(--gray);font-size:.9rem;margin-top:.5rem;max-width:60ch;overflow-wrap:anywhere}
 .links{margin-top:1rem;display:flex;gap:1rem;flex-wrap:wrap}
@@ -224,7 +243,10 @@ noscript .sheet-list img{margin-bottom:1rem;border:1px solid var(--rule)}
       <button id="prev" aria-label="Previous">&#8249;</button>
       <button id="next" aria-label="Next">&#8250;</button>
     </div>
-    <span class="folio" id="folio"></span>
+    <div class="right">
+      <span class="folio" id="folio"></span>
+      <button id="fs" aria-label="${escapeHtml(input.labels.fullscreen)}" title="${escapeHtml(input.labels.fullscreen)}">&#9974;</button>
+    </div>
   </div>
   <noscript>
     <div class="sheet-list">
@@ -273,6 +295,16 @@ noscript .sheet-list img{margin-bottom:1rem;border:1px solid var(--rule)}
     if(e.key==='ArrowRight')go(1);
     if(e.key==='ArrowLeft')go(-1);
   });
+  var sheet=document.querySelector('.sheet');
+  var fs=document.getElementById('fs');
+  var fsEnabled=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+  if(fs&&fsEnabled&&sheet){
+    fs.addEventListener('click',function(){
+      var d=document;
+      if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d)}
+      else{(sheet.requestFullscreen||sheet.webkitRequestFullscreen).call(sheet)}
+    });
+  }else if(fs){fs.style.display='none'}
   render();
 })();
 </script>
