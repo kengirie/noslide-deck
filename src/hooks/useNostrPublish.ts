@@ -21,9 +21,10 @@ export function useNostrPublish(): UseMutationResult<
       if (user) {
         const tags = t.tags ?? [];
 
-        // Add the client tag if it doesn't exist
+        // Tag events with the app name ("via noslide-deck") rather than the
+        // deploy host, so likes/comments read the same on GitHub Pages or nsite.
         if (location.protocol === "https:" && !tags.some(([name]) => name === "client")) {
-          tags.push(["client", location.hostname]);
+          tags.push(["client", "noslide-deck"]);
         }
 
         const event = await user.signer.signEvent({
