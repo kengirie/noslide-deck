@@ -49,6 +49,26 @@ export function siteAssetUrl(gateway: string, path: string): string {
   return `https://${SITE_NSITE_SUBDOMAIN}.${gateway}${path}`;
 }
 
+declare global {
+  interface Window {
+    /** Injected by a deck's mirrored index.html so the app boots into it at "/". */
+    __DECK__?: { npub: string; deckId: string };
+  }
+}
+
+/**
+ * When the app is served from a deck's own nsite (方針A), its baked index.html
+ * sets `window.__DECK__` so the SPA opens that deck at the site root instead of
+ * the home/upload page. Returns null on the normal app hosts.
+ */
+export function getDeckSiteTarget(): { npub: string; deckId: string } | null {
+  const target = typeof window !== 'undefined' ? window.__DECK__ : undefined;
+  if (target && typeof target.npub === 'string' && typeof target.deckId === 'string') {
+    return target;
+  }
+  return null;
+}
+
 export interface AppDeckLink {
   label: string;
   url: string;
