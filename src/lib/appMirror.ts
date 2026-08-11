@@ -1,6 +1,6 @@
 import type { NostrSigner } from '@nostrify/nostrify';
 import { APP_GATEWAYS, siteAssetUrl } from './siteConfig';
-import { uploadToServers } from './blossomMulti';
+import { sha256Hex, uploadToServers } from './blossomMulti';
 
 /**
  * Mirroring the interactive app into a deck's own nsite (方針A).
@@ -53,9 +53,12 @@ export async function fetchSiteAssets(signal?: AbortSignal): Promise<SiteAssets>
         lastError = new Error(`${response.status} from ${gateway}`);
         continue;
       }
-      const data: unknown = await response.json();
+      // nsite gateways serve their SPA fallback (index.html, 200) for any path
+      // not in the manifest, so a missing site-assets.json arrives as HTML.
+      // response.json() rejects that; treat it as "app not deployed here".
+      const data: unknown = await response.json().catch(() => null);
       if (isSiteAssets(data)) return { ...data, gateway };
-      lastError = new Error(`Malformed site-assets.json from ${gateway}`);
+      lastError = new Error(`No site-assets.json served by ${gateway} (is the app nsite deployed?)`);
     } catch (err) {
       lastError = err;
     }
@@ -100,10 +103,17 @@ export async function ensureAppAssets(opts: {
     if (!response.ok) {
       throw new Error(`Failed to copy app asset ${asset.path}: ${response.status}`);
     }
-    const blob = await response.blob();
+    // The gateway returns its SPA fallback (index.html) for a missing asset, so
+    // verify the bytes hash to the expected sha256 before mirroring — otherwise
+    // we'd pin HTML under a JS/CSS path and permanently break the deck site.
+    const buffer = await response.arrayBuffer();
+    const actual = await sha256Hex(buffer);
+    if (actual !== asset.sha256) {
+      throw new Error(`App asset ${asset.path} did not match its hash (app nsite likely stale/undeployed)`);
+    }
     const ext = asset.path.split('.').pop() ?? '';
     await uploadToServers({
-      blob,
+      blob: new Blob([buffer], { type: CONTENT_TYPE[ext] ?? 'application/octet-stream' }),
       name: asset.path.split('/').pop() ?? 'asset',
       type: CONTENT_TYPE[ext] ?? 'application/octet-stream',
       servers,
