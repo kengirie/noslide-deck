@@ -1,40 +1,56 @@
-# nostr slide deck
+# noslide deck
 
-**Nostr 版 Speaker Deck。** PDF をドロップすると、共有できるスライドページが Nostr 上に公開されます。
+Share slides on Nostr. When you upload a PDF, it is published as a NIP-5A nsite. The nsite URL is both the share page and the app: readers can flip through the slides in the browser, and when the link is pasted somewhere, it shows a card of the first slide.
 
-Drop a PDF and get a shareable slide page on Nostr: links unfurl into a card of your first slide, and readers flip through the pages right in the browser. No accounts — your Nostr key is you.
+**GH pages**: <https://kengirie.github.io/nostr-slide-deck/>
+**Nsite**: <https://39ohbfiu1ziyvxhwqdklupc0yrc4mcgmjpfe3w6vvz1gp6wg7hslides.nwb.tf/>
 
-**App**: <https://kengirie.github.io/nostr-slide-deck/>
+## How it works — Server-Side Rendering, without a server
 
-## How it works — smart client, dumb server
+To show a link-preview (OG) card, you usually need a **server** that renders HTML for each request. Speaker Deck does it this way. The server is the smart part:
 
-There is **zero app-specific server code**. Everything is generated in the browser at publish time (see [Abstract.md](Abstract.md) for the full design):
-
-1. pdf.js renders every page of the PDF to WebP images client-side (plus a 1200×630 JPEG thumbnail).
-2. The PDF, page images, and thumbnail are uploaded to multiple [Blossom](https://github.com/hzrd149/blossom) servers, addressed by SHA-256 hash.
-3. A **deck event** (addressable kind `35891`, documented in [NIP.md](NIP.md)) records both the URL *and* the hash of every file, so files survive any single server's death.
-4. A self-contained static viewer HTML — with `og:image` and friends **baked in at publish time** — is uploaded to Blossom and published as an nsite (NIP-5A kind `15128` manifest). Gateways like `nosto.re` serve it at `https://<npub>.nosto.re/<deck-id>/`, so crawlers get OG cards with no SSR anywhere.
-5. Comments (NIP-22), reactions (NIP-25), and profiles are plain Nostr — visible from any client.
-
-## Development
-
-```sh
-npm run dev    # dev server on :8080
-npm test       # typecheck + lint + vitest + build, all in one
+```text
+  ┌──────────────────────────────────────┐
+  │  Server                     (smart)  │
+  │  renders HTML per request (SSR)      │
+  └────────────────────┬─────────────────┘
+                       │ HTML + OG card
+                       ▼
+  ┌──────────────────────────────────────┐
+  │  Viewer / crawler           (dumb)   │
+  │  browser only — asks the server      │
+  └──────────────────────────────────────┘
 ```
 
-Deploys to GitHub Pages automatically on push to `main`.
+noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host (the deck's own NIP-5A nsite on [Blossom](https://github.com/hzrd149/blossom), addressed by SHA-256). So the smart part moves to the upload client, and it runs only once:
 
-### One-time operator setup
-
-Register the NIP-89 app handler (lets other Nostr clients offer "Open with nostr slide deck" for deck events):
-
-```sh
-NSEC=nsec1... node scripts/publish-nip89.mjs
+```text
+  ┌──────────────────────────────────────┐
+  │  Upload client              (smart)  │
+  │  pdf.js images · bakes HTML w/ OG    │
+  └────────────────────┬─────────────────┘
+                       │ files, by SHA-256
+                       ▼
+  ┌──────────────────────────────────────┐
+  │  nsite + Blossom            (dumb)   │
+  │  serves the baked files as-is        │
+  └────────────────────┬─────────────────┘
+                       │ HTTPS
+                       ▼
+  ┌──────────────────────────────────────┐
+  │  Viewer                     (dumb)   │
+  │  crawler: OG card · human: full app  │
+  └──────────────────────────────────────┘
 ```
+
+So one URL works for both a crawler and a person. In detail, a deck is an addressable **kind `35891`** event ([NIP.md](NIP.md)). It keeps every file by URL *and* by hash, and it is served as its own NIP-5A **named site (kind `35128`)** at `https://<npubB36><deck-id>.<gateway>/`. Comments (NIP-22), reactions (NIP-25), and profiles are all plain Nostr.
+
+Local setup and deployment live in [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Stack
 
-React 19 · Vite · TailwindCSS 4 · [Nostrify](https://nostrify.dev) · pdf.js · [MKStack](https://soapbox.pub/mkstack) template.
+React 19 · React Router · Vite · TailwindCSS 4 · [Nostrify](https://nostrify.dev) · pdf.js · [MKStack](https://soapbox.pub/mkstack) template.
 
-Design: paper & ink（紙とインク）— Shippori Mincho B1 / IBM Plex Sans JP / IBM Plex Mono, crop-mark sheets, folio page numbers, and one vermilion seal.
+## License
+
+MIT.
