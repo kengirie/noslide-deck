@@ -4,6 +4,7 @@ English | [日本語](README.ja.md)
 
 Share slides on Nostr. When you upload a PDF, it is published as a NIP-5A nsite. The nsite URL is both the share page and the app: readers can flip through the slides in the browser, and when the link is pasted somewhere, it shows a card of the first slide.
 
+
 **GH pages**: <https://kengirie.github.io/noslide-deck/>
 
 **Nsite**: <https://39ohbfiu1ziyvxhwqdklupc0yrc4mcgmjpfe3w6vvz1gp6wg7hslides.nwb.tf/>
@@ -25,7 +26,7 @@ To show a link-preview (OG) card, you usually need a **server** that renders HTM
   └──────────────────────────────────────┘
 ```
 
-noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host (the deck's own NIP-5A nsite on [Blossom](https://github.com/hzrd149/blossom), addressed by SHA-256). So the smart part moves to the upload client, and it runs only once:
+noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host (NIP-5A nsite). So the smart part moves to the upload client, and it runs only once:
 
 ```text
   ┌──────────────────────────────────────┐
