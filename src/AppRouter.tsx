@@ -11,7 +11,7 @@ import NotFound from "./pages/NotFound";
  * On a deck's mirrored nsite the deck is served at "/", so boot straight into it
  * (方針A). On the normal app hosts this is the home/upload page.
  */
-function RootRoute() {
+export function RootRoute() {
   const target = getDeckSiteTarget();
   return target ? <DeckPage npub={target.npub} deckId={target.deckId} /> : <Index />;
 }

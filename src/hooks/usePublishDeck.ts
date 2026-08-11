@@ -4,12 +4,13 @@ import { nip19 } from 'nostr-tools';
 import type { DeckMetadata } from '@/components/publish/DeckMetadataForm';
 import { useTranslation } from 'react-i18next';
 import { getEffectiveBlossomServers } from '@/lib/appBlossom';
+import { ensureAppAssets, fetchSiteAssets } from '@/lib/appMirror';
 import { uploadToServers, type BlossomServerResult } from '@/lib/blossomMulti';
-import { DECK_KIND, buildDeckEvent, deckAddress, parseHashtagInput } from '@/lib/deckEvent';
+import { DECK_KIND, buildDeckEvent, parseHashtagInput } from '@/lib/deckEvent';
 import { buildNamedSiteManifest, buildServerList, type SitePath } from '@/lib/nsite';
 import type { RenderedDeck } from '@/lib/pdfRender';
-import { LOOKUP_RELAYS, appDeckUrls, deckGatewayUrl } from '@/lib/siteConfig';
-import { renderEmbedHtml, renderStaticViewerHtml } from '@/lib/staticViewer';
+import { LOOKUP_RELAYS, deckGatewayUrl } from '@/lib/siteConfig';
+import { renderDeckAppHtml, renderEmbedHtml } from '@/lib/staticViewer';
 import { useAppContext } from './useAppContext';
 import { useCurrentUser } from './useCurrentUser';
 import { useNostrPublish } from './useNostrPublish';
@@ -164,30 +165,34 @@ export function usePublishDeck() {
           npub,
         };
 
-        // Static nsite mirror for OG cards: the deck becomes its own NIP-5A
-        // named site (kind 35128, d = deck id). Failures here must not kill
-        // the publish — the deck is already live in-app.
+        // Unified deck site (方針A): the deck becomes its own NIP-5A named site
+        // (kind 35128, d = deck id) that serves the full interactive app, so the
+        // share URL and the app URL are one and the same. Failures here must not
+        // kill the publish — the deck is already live in-app.
         setState((prev) => ({ ...prev, step: 'mirroring' }));
         try {
           const gatewayUrl = deckGatewayUrl(user.pubkey, meta.slug);
-          const html = renderStaticViewerHtml({
+          const pagePaths = pageUploads.map((_, i) => `pages/${String(i + 1).padStart(3, '0')}.webp`);
+
+          // App code assets to mirror, from the canonical "slides" nsite build.
+          const siteAssets = await fetchSiteAssets();
+          await ensureAppAssets({
+            assets: siteAssets.assets,
+            servers,
+            signer: user.signer,
+            gateway: siteAssets.gateway,
+          });
+
+          const html = renderDeckAppHtml({
             title: meta.title,
             summary: meta.summary,
             canonicalUrl: gatewayUrl,
             ogImageUrl: `${gatewayUrl}thumb.jpg`,
-            pagePaths: pageUploads.map((_, i) => `pages/${String(i + 1).padStart(3, '0')}.webp`),
-            pdfUrl: pdfUpload.url,
-            deckAddress: deckAddress({ pubkey: user.pubkey, identifier: meta.slug }),
-            relays: [...new Set(config.relayMetadata.relays.map((relay) => relay.url))],
-            appLinks: appDeckUrls(npub, meta.slug),
-            labels: {
-              downloadPdf: t('deck.downloadPdf'),
-              likes: t('reactions.like'),
-              openInApp: t('share.openInApp'),
-              comments: t('comments.title'),
-              noComments: t('comments.empty'),
-              fullscreen: t('deck.fullscreen'),
-            },
+            npub,
+            deckId: meta.slug,
+            pagePaths,
+            scripts: siteAssets.scripts,
+            styles: siteAssets.styles,
           });
           const htmlUpload = await uploadToServers({
             blob: new Blob([html], { type: 'text/html' }),
@@ -200,7 +205,7 @@ export function usePublishDeck() {
           const embedHtml = renderEmbedHtml({
             title: meta.title,
             canonicalUrl: gatewayUrl,
-            pagePaths: pageUploads.map((_, i) => `pages/${String(i + 1).padStart(3, '0')}.webp`),
+            pagePaths,
             fullscreenLabel: t('deck.fullscreen'),
           });
           const embedUpload = await uploadToServers({
@@ -219,6 +224,7 @@ export function usePublishDeck() {
               path: `/pages/${String(i + 1).padStart(3, '0')}.webp`,
               sha256: page.sha256,
             })),
+            ...siteAssets.assets.map((asset) => ({ path: asset.path, sha256: asset.sha256 })),
           ];
 
           const manifest = await publishEvent(
@@ -269,7 +275,6 @@ export function usePublishDeck() {
       user,
       config.blossomServerMetadata,
       config.useAppBlossomServers,
-      config.relayMetadata.relays,
       nostr,
       publishEvent,
       t,
