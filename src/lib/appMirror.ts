@@ -5,12 +5,18 @@ import { sha256Hex, uploadToServers } from './blossomMulti';
 /**
  * Mirroring the interactive app into a deck's own nsite (方針A).
  *
- * The app's code assets (their `path` + `sha256`) come from the canonical
- * root-base build published as the "slides" nsite — its `site-assets.json`.
- * A published deck lists those assets in its own NIP-5A manifest so the gateway
- * serves the full app from the deck's URL. Blobs are content-addressed, so a
- * deck pins whatever app version was live at publish time and keeps working
- * across later app redeploys.
+ * A deck site serves the app from its root, so it needs a ROOT-base build's code
+ * assets (their `path` + `sha256`). Two sources, in order:
+ *   1. The running app itself, when it is a root-base build (`BASE_URL === '/'`,
+ *      e.g. the "slides" nsite or a local `vite preview`) — its own
+ *      `site-assets.json` is same-origin and always current.
+ *   2. The canonical "slides" nsite via each gateway — the fallback used when the
+ *      publisher runs a sub-path build (e.g. GitHub Pages under /nostr-slide-deck/,
+ *      whose baked base would break routing at a deck root).
+ *
+ * The deck lists those assets in its own NIP-5A manifest so the gateway serves
+ * the full app from the deck's URL. Blobs are content-addressed, so a deck pins
+ * whatever app version was live at publish time and survives later redeploys.
  */
 
 export interface SiteAsset {
@@ -25,11 +31,31 @@ export interface SiteAssets {
   styles: string[];
   /** Every code asset to mirror into the deck manifest. */
   assets: SiteAsset[];
-  /** Gateway host that served the manifest; used to copy asset bytes if needed. */
-  gateway: string;
+  /** URL prefix (ends in "/") the asset bytes can be copied from if missing. */
+  assetBase: string;
 }
 
-function isSiteAssets(data: unknown): data is Omit<SiteAssets, 'gateway'> {
+interface AssetSource {
+  manifestUrl: string;
+  assetBase: string;
+}
+
+/** Candidate sources for the app-asset manifest, best first. */
+function assetSources(): AssetSource[] {
+  const sources: AssetSource[] = [];
+  // Prefer the running app when it is a root-base build — its assets already
+  // suit a deck root and are same-origin (no cross-origin/deploy dependency).
+  if (import.meta.env.BASE_URL === '/' && typeof location !== 'undefined') {
+    const base = `${location.origin}/`;
+    sources.push({ manifestUrl: `${base}site-assets.json`, assetBase: base });
+  }
+  for (const gateway of APP_GATEWAYS) {
+    sources.push({ manifestUrl: siteAssetUrl(gateway, '/site-assets.json'), assetBase: siteAssetUrl(gateway, '/') });
+  }
+  return sources;
+}
+
+function isSiteAssets(data: unknown): data is Pick<SiteAssets, 'scripts' | 'styles' | 'assets'> {
   if (!data || typeof data !== 'object') return false;
   const d = data as Record<string, unknown>;
   return (
@@ -43,22 +69,22 @@ function isSiteAssets(data: unknown): data is Omit<SiteAssets, 'gateway'> {
   );
 }
 
-/** Fetch the app-asset manifest from the canonical "slides" nsite, trying each gateway. */
+/** Load the app-asset manifest from the first source that serves a real one. */
 export async function fetchSiteAssets(signal?: AbortSignal): Promise<SiteAssets> {
   let lastError: unknown;
-  for (const gateway of APP_GATEWAYS) {
+  for (const source of assetSources()) {
     try {
-      const response = await fetch(siteAssetUrl(gateway, '/site-assets.json'), { signal });
+      const response = await fetch(source.manifestUrl, { signal });
       if (!response.ok) {
-        lastError = new Error(`${response.status} from ${gateway}`);
+        lastError = new Error(`${response.status} from ${source.manifestUrl}`);
         continue;
       }
       // nsite gateways serve their SPA fallback (index.html, 200) for any path
       // not in the manifest, so a missing site-assets.json arrives as HTML.
-      // response.json() rejects that; treat it as "app not deployed here".
+      // response.json() rejects that; treat it as "app not available here".
       const data: unknown = await response.json().catch(() => null);
-      if (isSiteAssets(data)) return { ...data, gateway };
-      lastError = new Error(`No site-assets.json served by ${gateway} (is the app nsite deployed?)`);
+      if (isSiteAssets(data)) return { ...data, assetBase: source.assetBase };
+      lastError = new Error(`No site-assets.json at ${source.manifestUrl} (is a root-base app deployed?)`);
     } catch (err) {
       lastError = err;
     }
@@ -83,33 +109,33 @@ async function blobExists(server: string, sha256: string, signal?: AbortSignal):
 
 /**
  * Ensure each app asset is retrievable by `sha256` from at least one of the
- * deck's Blossom servers, so the gateway can serve the mirrored app. Assets the
- * "slides" nsite already published (the default app Blossom server) are found by
- * HEAD and skipped; anything missing is copied from the canonical nsite.
+ * deck's Blossom servers, so the gateway can serve the mirrored app. Assets
+ * already on a deck server (e.g. published by the "slides" nsite) are found by
+ * HEAD and skipped; anything missing is copied from `assetBase`.
  */
 export async function ensureAppAssets(opts: {
   assets: SiteAsset[];
   servers: string[];
   signer: NostrSigner;
-  gateway: string;
+  assetBase: string;
   signal?: AbortSignal;
 }): Promise<void> {
-  const { assets, servers, signer, gateway, signal } = opts;
+  const { assets, servers, signer, assetBase, signal } = opts;
   for (const asset of assets) {
     const present = await Promise.all(servers.map((server) => blobExists(server, asset.sha256, signal)));
     if (present.some(Boolean)) continue;
 
-    const response = await fetch(siteAssetUrl(gateway, asset.path), { signal });
+    const response = await fetch(new URL(asset.path.replace(/^\//, ''), assetBase), { signal });
     if (!response.ok) {
       throw new Error(`Failed to copy app asset ${asset.path}: ${response.status}`);
     }
-    // The gateway returns its SPA fallback (index.html) for a missing asset, so
+    // A gateway returns its SPA fallback (index.html) for a missing asset, so
     // verify the bytes hash to the expected sha256 before mirroring — otherwise
     // we'd pin HTML under a JS/CSS path and permanently break the deck site.
     const buffer = await response.arrayBuffer();
     const actual = await sha256Hex(buffer);
     if (actual !== asset.sha256) {
-      throw new Error(`App asset ${asset.path} did not match its hash (app nsite likely stale/undeployed)`);
+      throw new Error(`App asset ${asset.path} did not match its hash (source app stale/undeployed)`);
     }
     const ext = asset.path.split('.').pop() ?? '';
     await uploadToServers({

@@ -180,7 +180,7 @@ export function usePublishDeck() {
             assets: siteAssets.assets,
             servers,
             signer: user.signer,
-            gateway: siteAssets.gateway,
+            assetBase: siteAssets.assetBase,
           });
 
           const html = renderDeckAppHtml({
