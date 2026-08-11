@@ -260,6 +260,8 @@ export function usePublishDeck() {
           result.gatewayUrl = gatewayUrl;
         } catch (err) {
           result.mirrorError = err instanceof Error ? err.message : String(err);
+          // The UI only shows a generic warning; surface the real cause for debugging.
+          console.error('Deck site mirror failed:', err);
         }
 
         setState((prev) => ({ ...prev, step: 'done', result }));
