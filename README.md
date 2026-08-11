@@ -25,7 +25,7 @@ To show a link-preview (OG) card, you usually need a **server** that renders HTM
   └──────────────────────────────────────┘
 ```
 
-noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host (the deck's own NIP-5A nsite on [Blossom](https://github.com/hzrd149/blossom), addressed by SHA-256). So the smart part moves to the upload client, and it runs only once:
+noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host (NIP-5A nsite). So the smart part moves to the upload client, and it runs only once:
 
 ```text
   ┌──────────────────────────────────────┐
