@@ -4,6 +4,8 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vitest/config";
 
+import { siteAssetsManifest } from "./vite-plugin-site-assets";
+
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
   // GitHub Pages serves the app under /<repo>/; CI sets VITE_BASE accordingly
@@ -15,6 +17,7 @@ export default defineConfig(() => ({
   plugins: [
     react(),
     tailwindcss(),
+    siteAssetsManifest(),
   ],
   test: {
     globals: true,

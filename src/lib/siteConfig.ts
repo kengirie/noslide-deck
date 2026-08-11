@@ -34,6 +34,43 @@ export const GH_PAGES_BASE = 'https://kengirie.github.io/nostr-slide-deck';
 export const SITE_NSITE_SUBDOMAIN = '39ohbfiu1ziyvxhwqdklupc0yrc4mcgmjpfe3w6vvz1gp6wg7hslides';
 export const APP_GATEWAYS = ['nsite.lol', 'nwb.tf'];
 
+/**
+ * Absolute URL of a mirrored app asset (or the `site-assets.json` index itself)
+ * on the canonical "slides" nsite. A published deck mirrors the interactive app
+ * into its own nsite (方針A) using the app's code assets from that root-base
+ * build. Callers try each of `APP_GATEWAYS` in turn since any one may be down.
+ */
+export function siteAssetUrl(gateway: string, path: string): string {
+  return `https://${SITE_NSITE_SUBDOMAIN}.${gateway}${path}`;
+}
+
+declare global {
+  interface Window {
+    /** Fallback injection point; the primary channel is the `deck:*` meta tags. */
+    __DECK__?: { npub: string; deckId: string };
+  }
+}
+
+/**
+ * When the app is served from a deck's own nsite (方針A), its baked index.html
+ * tags the deck via `<meta name="deck:npub|deck:id">` so the SPA opens that deck
+ * at the site root instead of the home/upload page. Meta tags are used (not an
+ * inline script) so the app's strict CSP (`script-src 'self'`) can stay in
+ * force on the now-interactive deck page. Returns null on the normal app hosts.
+ */
+export function getDeckSiteTarget(): { npub: string; deckId: string } | null {
+  if (typeof document !== 'undefined') {
+    const npub = document.querySelector('meta[name="deck:npub"]')?.getAttribute('content');
+    const deckId = document.querySelector('meta[name="deck:id"]')?.getAttribute('content');
+    if (npub && deckId) return { npub, deckId };
+  }
+  const target = typeof window !== 'undefined' ? window.__DECK__ : undefined;
+  if (target && typeof target.npub === 'string' && typeof target.deckId === 'string') {
+    return target;
+  }
+  return null;
+}
+
 export interface AppDeckLink {
   label: string;
   url: string;

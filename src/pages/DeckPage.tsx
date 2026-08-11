@@ -141,9 +141,16 @@ function DeckArticle({ deck }: { deck: Deck }) {
   );
 }
 
-const DeckPage = () => {
+/**
+ * `npub`/`deckId` come from the route params in the app, but on a deck's own
+ * mirrored nsite the deck is served at "/" with no params, so they can be passed
+ * in directly (see AppRouter's root route).
+ */
+const DeckPage = ({ npub: npubProp, deckId: deckIdProp }: { npub?: string; deckId?: string } = {}) => {
   const { t } = useTranslation();
-  const { npub, deckId } = useParams<{ npub: string; deckId: string }>();
+  const params = useParams<{ npub: string; deckId: string }>();
+  const npub = npubProp ?? params.npub;
+  const deckId = deckIdProp ?? params.deckId;
 
   let pubkey: string | undefined;
   try {
