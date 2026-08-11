@@ -34,6 +34,21 @@ export const GH_PAGES_BASE = 'https://kengirie.github.io/nostr-slide-deck';
 export const SITE_NSITE_SUBDOMAIN = '39ohbfiu1ziyvxhwqdklupc0yrc4mcgmjpfe3w6vvz1gp6wg7hslides';
 export const APP_GATEWAYS = ['nsite.lol', 'nwb.tf'];
 
+/**
+ * A published deck mirrors the interactive app into its own nsite (方針A), so it
+ * needs the app's code assets (path + sha256) from the canonical root-base
+ * build. That build is the "slides" nsite; its `site-assets.json` is the source
+ * of truth. We try each gateway in turn since any one may be down.
+ */
+export function siteAssetsUrls(): string[] {
+  return APP_GATEWAYS.map((gateway) => `https://${SITE_NSITE_SUBDOMAIN}.${gateway}/site-assets.json`);
+}
+
+/** Absolute URL of a mirrored app asset on the canonical "slides" nsite. */
+export function siteAssetUrl(gateway: string, path: string): string {
+  return `https://${SITE_NSITE_SUBDOMAIN}.${gateway}${path}`;
+}
+
 export interface AppDeckLink {
   label: string;
   url: string;
