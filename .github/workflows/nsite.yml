@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies and build
         # No VITE_BASE here: an nsite is served from the npub root ("/"),
-        # unlike the GitHub Pages build which lives under /nostr-slide-deck/.
+        # unlike the GitHub Pages build which lives under /noslide-deck/.
         run: |
           npm install
           npm run build

@@ -39,7 +39,7 @@ jobs:
 
       - name: Install dependencies and build
         env:
-          VITE_BASE: /nostr-slide-deck/
+          VITE_BASE: /noslide-deck/
         run: |
           npm install
           npm run build

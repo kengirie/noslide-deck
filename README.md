@@ -4,7 +4,8 @@ English | [日本語](README.ja.md)
 
 Share slides on Nostr. When you upload a PDF, it is published as a NIP-5A nsite. The nsite URL is both the share page and the app: readers can flip through the slides in the browser, and when the link is pasted somewhere, it shows a card of the first slide.
 
-**GH pages**: <https://kengirie.github.io/nostr-slide-deck/>
+
+**GH pages**: <https://kengirie.github.io/noslide-deck/>
 
 **Nsite**: <https://39ohbfiu1ziyvxhwqdklupc0yrc4mcgmjpfe3w6vvz1gp6wg7hslides.nwb.tf/>
 
