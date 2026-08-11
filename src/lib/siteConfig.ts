@@ -51,17 +51,24 @@ export function siteAssetUrl(gateway: string, path: string): string {
 
 declare global {
   interface Window {
-    /** Injected by a deck's mirrored index.html so the app boots into it at "/". */
+    /** Fallback injection point; the primary channel is the `deck:*` meta tags. */
     __DECK__?: { npub: string; deckId: string };
   }
 }
 
 /**
  * When the app is served from a deck's own nsite (方針A), its baked index.html
- * sets `window.__DECK__` so the SPA opens that deck at the site root instead of
- * the home/upload page. Returns null on the normal app hosts.
+ * tags the deck via `<meta name="deck:npub|deck:id">` so the SPA opens that deck
+ * at the site root instead of the home/upload page. Meta tags are used (not an
+ * inline script) so the app's strict CSP (`script-src 'self'`) can stay in
+ * force on the now-interactive deck page. Returns null on the normal app hosts.
  */
 export function getDeckSiteTarget(): { npub: string; deckId: string } | null {
+  if (typeof document !== 'undefined') {
+    const npub = document.querySelector('meta[name="deck:npub"]')?.getAttribute('content');
+    const deckId = document.querySelector('meta[name="deck:id"]')?.getAttribute('content');
+    if (npub && deckId) return { npub, deckId };
+  }
   const target = typeof window !== 'undefined' ? window.__DECK__ : undefined;
   if (target && typeof target.npub === 'string' && typeof target.deckId === 'string') {
     return target;

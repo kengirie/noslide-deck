@@ -68,6 +68,112 @@ function assertWsUrl(value: string): string {
   return url.toString();
 }
 
+/** Root-relative same-origin app asset, e.g. "/assets/index-abc.js". */
+function assertAssetRef(value: string): string {
+  if (!/^\/[A-Za-z0-9/._-]+\.(js|css)$/.test(value)) {
+    throw new Error(`Refusing suspicious asset ref: ${value}`);
+  }
+  return value;
+}
+
+/**
+ * Content-Security-Policy for a mirrored deck site. Identical in spirit to the
+ * app's own index.html: scripts only from same-origin (the mirrored /assets),
+ * so the deck identity is passed via meta tags rather than an inline script.
+ */
+const DECK_SITE_CSP =
+  "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+  "frame-src 'self' https:; font-src 'self'; base-uri 'self'; manifest-src 'self'; " +
+  "connect-src 'self' blob: https: wss:; img-src 'self' data: blob: https:; media-src 'self' https:";
+
+export interface DeckAppHtmlInput {
+  title: string;
+  summary: string;
+  /** Absolute canonical URL of this deck on its gateway. */
+  canonicalUrl: string;
+  /** Absolute URL of the 1200x630 thumbnail. */
+  ogImageUrl: string;
+  /** npub of the deck author; the app boots into `${npub}/${deckId}`. */
+  npub: string;
+  /** Deck identifier (also the named-site `d`). */
+  deckId: string;
+  /** Relative page image paths for the <noscript> fallback, e.g. "pages/001.webp". */
+  pagePaths: string[];
+  /** App entry module scripts from site-assets.json, e.g. "/assets/index-*.js". */
+  scripts: string[];
+  /** App entry stylesheets from site-assets.json, e.g. "/assets/index-*.css". */
+  styles: string[];
+}
+
+/**
+ * index.html for a deck's own nsite (方針A): boots the full interactive app
+ * (which opens this deck at "/") while baking deck-specific OG meta for crawlers
+ * and a <noscript> image fallback. Unifies the share URL and the app URL.
+ */
+export function renderDeckAppHtml(input: DeckAppHtmlInput): string {
+  const title = escapeHtml(input.title);
+  const summary = escapeHtml(input.summary);
+  const canonical = escapeHtml(assertHttpUrl(input.canonicalUrl));
+  const ogImage = escapeHtml(assertHttpUrl(input.ogImageUrl));
+  const pages = input.pagePaths.map(assertRelativePath);
+  const scripts = input.scripts.map(assertAssetRef);
+  const styles = input.styles.map(assertAssetRef);
+
+  if (!/^npub1[a-z0-9]+$/.test(input.npub)) throw new Error(`Refusing bad npub: ${input.npub}`);
+  if (!/^[a-z0-9-]{1,13}$/.test(input.deckId)) throw new Error(`Refusing bad deckId: ${input.deckId}`);
+
+  const styleTags = styles
+    .map((href) => `<link rel="stylesheet" crossorigin href="${escapeHtml(href)}">`)
+    .join('\n');
+  const scriptTags = scripts
+    .map((src) => `<script type="module" crossorigin src="${escapeHtml(src)}"></script>`)
+    .join('\n');
+  const noscriptImages = pages
+    .map((p, i) => `<img src="${escapeHtml(p)}" alt="${title} — ${i + 1}" loading="lazy" style="max-width:100%;height:auto;margin-bottom:1rem">`)
+    .join('\n      ');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-security-policy" content="${DECK_SITE_CSP}">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>${title}</title>
+<meta name="description" content="${summary}">
+<link rel="canonical" href="${canonical}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${summary}">
+<meta property="og:url" content="${canonical}">
+<meta property="og:image" content="${ogImage}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${title}">
+<meta name="twitter:description" content="${summary}">
+<meta name="twitter:image" content="${ogImage}">
+<meta name="deck:npub" content="${escapeHtml(input.npub)}">
+<meta name="deck:id" content="${escapeHtml(input.deckId)}">
+${styleTags}
+${scriptTags}
+</head>
+<body>
+<div id="root"></div>
+<noscript>
+  <div style="max-width:72rem;margin:0 auto;padding:1.5rem;font-family:ui-sans-serif,system-ui,sans-serif">
+    <h1 style="font-size:1.25rem">${title}</h1>
+    ${summary ? `<p style="color:#6e6a63">${summary}</p>` : ''}
+    <div style="margin-top:1rem">
+      ${noscriptImages}
+    </div>
+  </div>
+</noscript>
+</body>
+</html>
+`;
+}
+
 /**
  * Chrome-less viewer for <iframe> embeds, published alongside index.html as
  * /embed.html. Same relative page paths; a small bottom bar links back to the
