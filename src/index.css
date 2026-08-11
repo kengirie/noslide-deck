@@ -4,9 +4,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "IBM Plex Sans JP", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  /* System fonts only — no web fonts shipped. Display uses the OS mincho
+     (Hiragino/Yu Mincho on Mac/Win) for the paper-and-ink feel, generic serif
+     elsewhere; body/mono fall back to the platform UI fonts. */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
