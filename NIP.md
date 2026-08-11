@@ -2,7 +2,7 @@
 
 `draft` `optional`
 
-This document describes the event format used by [nostr slide deck](https://github.com/kengirie/nostr-slide-deck) to publish presentation slide decks on Nostr.
+This document describes the event format used by [noslide deck](https://github.com/kengirie/noslide-deck) to publish presentation slide decks on Nostr.
 
 ## Deck event (kind `35891`)
 

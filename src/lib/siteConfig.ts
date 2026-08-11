@@ -23,8 +23,8 @@ export function profileUrl(npub: string): string {
   return `https://lumilumi.app/${npub}`;
 }
 
-/** GitHub Pages deployment of the interactive app (VITE_BASE = /nostr-slide-deck/). */
-export const GH_PAGES_BASE = 'https://kengirie.github.io/nostr-slide-deck';
+/** GitHub Pages deployment of the interactive app (VITE_BASE = /noslide-deck/). */
+export const GH_PAGES_BASE = 'https://kengirie.github.io/noslide-deck';
 
 /**
  * The interactive app is also published as a named nsite ("slides"). Its gateway
