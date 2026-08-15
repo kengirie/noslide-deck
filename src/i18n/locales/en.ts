@@ -82,6 +82,11 @@ export const en = {
     tooLong: 'Comment is too long',
     failed: 'Could not post your comment',
   },
+  profile: {
+    decks: 'Decks',
+    empty: 'No decks published yet.',
+    viewOnLumilumi: 'View on lumilumi',
+  },
   share: {
     openInApp: 'Like or comment in the app:',
   },

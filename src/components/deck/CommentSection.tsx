@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { nip19 } from 'nostr-tools';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { LoginArea } from '@/components/auth/LoginArea';
@@ -14,7 +15,6 @@ import { useNostrPublish } from '@/hooks/useNostrPublish';
 import { useToast } from '@/hooks/useToast';
 import { COMMENT_MAX_LENGTH, buildCommentEvent, parseComment, type DeckComment } from '@/lib/comment';
 import { deckAddress, type Deck } from '@/lib/deckEvent';
-import { profileUrl } from '@/lib/siteConfig';
 
 function CommentItem({ comment }: { comment: DeckComment }) {
   const { i18n } = useTranslation();
@@ -29,22 +29,20 @@ function CommentItem({ comment }: { comment: DeckComment }) {
 
   return (
     <li className="flex gap-3 py-4">
-      <a href={profileUrl(npub)} target="_blank" rel="noreferrer" className="shrink-0">
+      <Link to={`/${npub}`} className="shrink-0">
         <Avatar className="size-9 rounded-[3px]">
           <AvatarImage src={metadata?.picture} alt="" />
           <AvatarFallback className="rounded-[3px] font-display text-xs">{name.slice(0, 2)}</AvatarFallback>
         </Avatar>
-      </a>
+      </Link>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2">
-          <a
-            href={profileUrl(npub)}
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to={`/${npub}`}
             className="truncate text-sm font-medium hover:underline"
           >
             {name}
-          </a>
+          </Link>
           <span className="font-mono text-[10px] tracking-wider text-muted-foreground">{when}</span>
         </div>
         <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-relaxed [overflow-wrap:anywhere]">

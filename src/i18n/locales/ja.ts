@@ -86,6 +86,11 @@ export const ja: Translation = {
     tooLong: 'コメントが長すぎます',
     failed: 'コメントを投稿できませんでした',
   },
+  profile: {
+    decks: 'デッキ一覧',
+    empty: 'まだデッキが公開されていません。',
+    viewOnLumilumi: 'lumilumiで見る',
+  },
   share: {
     openInApp: 'アプリでいいね・コメント:',
   },
