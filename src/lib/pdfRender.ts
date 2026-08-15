@@ -34,6 +34,17 @@ export class PdfRenderError extends Error {
   }
 }
 
+/**
+ * Where pdf.js fetches its bundled CMap tables and standard-14 font programs,
+ * served by the `pdfjs-assets` Vite plugin under the app base. Absolute URLs so
+ * the pdf worker resolves them against the origin, not its own script URL.
+ * `cMapPacked` matches the shipped `.bcmap` (binary) format.
+ */
+const pdfAsset = (dir: string) =>
+  new URL(`${import.meta.env.BASE_URL}pdfjs/${dir}/`, window.location.href).href;
+const CMAP_URL = pdfAsset('cmaps');
+const STANDARD_FONT_DATA_URL = pdfAsset('standard_fonts');
+
 let pdfjsPromise: Promise<typeof import('pdfjs-dist')> | null = null;
 
 function loadPdfjs(): Promise<typeof import('pdfjs-dist')> {
@@ -89,7 +100,14 @@ export async function renderPdf(
   const { getDocument } = await loadPdfjs();
 
   const data = await file.arrayBuffer();
-  const loadingTask = getDocument({ data });
+  const loadingTask = getDocument({
+    data,
+    // Recover text from PDFs whose fonts are referenced but not embedded
+    // (e.g. Keynote/PowerPoint exports); without these, such text is dropped.
+    cMapUrl: CMAP_URL,
+    cMapPacked: true,
+    standardFontDataUrl: STANDARD_FONT_DATA_URL,
+  });
   let doc;
   try {
     doc = await loadingTask.promise;

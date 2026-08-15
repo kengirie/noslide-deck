@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vitest/config";
 
+import { pdfjsAssets } from "./vite-plugin-pdfjs-assets";
 import { siteAssetsManifest } from "./vite-plugin-site-assets";
 
 // https://vitejs.dev/config/
@@ -17,6 +18,7 @@ export default defineConfig(() => ({
   plugins: [
     react(),
     tailwindcss(),
+    pdfjsAssets(),
     siteAssetsManifest(),
   ],
   test: {
