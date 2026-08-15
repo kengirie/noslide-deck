@@ -17,12 +17,17 @@ function ProfileHeader({ pubkey, npub }: { pubkey: string; npub: string }) {
   const { t } = useTranslation();
   const author = useAuthor(pubkey);
   const metadata = author.data?.metadata;
-  const name = metadata?.display_name || metadata?.name || `${npub.slice(0, 12)}…`;
+  const displayName = metadata?.display_name?.trim();
+  const userName = metadata?.name?.trim();
+  const heading = displayName || userName || `${npub.slice(0, 12)}…`;
+  // Only show the @handle when it differs from the heading (i.e. a display_name
+  // is set), so a single-name profile isn't shown twice.
+  const handle = userName && userName !== heading ? userName : undefined;
 
   useSeoMeta({
-    title: `${name} — ${t('app.name')}`,
+    title: `${heading} — ${t('app.name')}`,
     description: metadata?.about || undefined,
-    ogTitle: name,
+    ogTitle: heading,
     ogDescription: metadata?.about || undefined,
     ogImage: metadata?.picture,
   });
@@ -34,13 +39,18 @@ function ProfileHeader({ pubkey, npub }: { pubkey: string; npub: string }) {
           <Avatar className="size-16 rounded-[3px]">
             <AvatarImage src={metadata?.picture} alt="" />
             <AvatarFallback className="rounded-[3px] font-display text-lg">
-              {name.slice(0, 2)}
+              {heading.slice(0, 2)}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
             <h1 className="break-words font-display text-2xl font-bold leading-snug sm:text-3xl [overflow-wrap:anywhere]">
-              {name}
+              {heading}
             </h1>
+            {handle && (
+              <p className="mt-0.5 break-words text-sm text-muted-foreground [overflow-wrap:anywhere]">
+                @{handle}
+              </p>
+            )}
             <p className="mt-1 break-all font-mono text-[11px] text-muted-foreground">
               {npub}
             </p>
