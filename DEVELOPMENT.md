@@ -12,7 +12,7 @@ npm test       # typecheck + lint + vitest + build, all in one
 
 ### One-time operator setup
 
-Register the NIP-89 app handler (lets other Nostr clients offer "Open with nostr slide deck" for deck events):
+Register the NIP-89 app handler (lets other Nostr clients offer "Open with noslide deck" for deck events):
 
 ```sh
 NSEC=nsec1... node scripts/publish-nip89.mjs

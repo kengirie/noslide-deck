@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Publish the NIP-89 application handler for nostr slide deck (kind 35891 decks).
+ * Publish the NIP-89 application handler for noslide deck (kind 35891 decks).
  *
  * Run once with the operator key:
  *   NSEC=nsec1... node scripts/publish-nip89.mjs
  *
  * Other Nostr clients that encounter a kind 35891 event can then offer
- * "Open with nostr slide deck".
+ * "Open with noslide deck".
  */
 import { finalizeEvent, nip19 } from 'nostr-tools';
 
@@ -31,8 +31,8 @@ const handler = finalizeEvent({
   kind: 31990,
   created_at: now,
   content: JSON.stringify({
-    name: 'nostr slide deck',
-    display_name: 'nostr slide deck',
+    name: 'noslide deck',
+    display_name: 'noslide deck',
     about: 'Drop a PDF, get a shareable slide page. Page-flip viewer, OG cards, embeds.',
     website: APP_URL,
   }),
@@ -40,7 +40,7 @@ const handler = finalizeEvent({
     ['d', 'nostr-slide-deck'],
     ['k', String(DECK_KIND)],
     ['web', `${APP_URL}/<bech32>`, 'naddr'],
-    ['alt', 'Handler information for the nostr slide deck app'],
+    ['alt', 'Handler information for the noslide deck app'],
   ],
 }, sk);
 

@@ -48,7 +48,7 @@ Page order is the order of the `imeta` tags within the event.
     ["imeta", "url https://blossom.example/aa11...ff00.webp", "x aa11...ff00", "m image/webp", "dim 1600x900"],
     ["imeta", "url https://blossom.example/bb22...ee11.webp", "x bb22...ee11", "m image/webp", "dim 1600x900"],
     ["t", "nostr"],
-    ["alt", "Slide deck \"Slides on Nostr\" (2 pages), published with nostr slide deck"]
+    ["alt", "Slide deck \"Slides on Nostr\" (2 pages), published with noslide deck"]
   ]
 }
 ```
