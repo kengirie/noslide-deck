@@ -41,8 +41,8 @@ function ProfileHeader({ pubkey, npub }: { pubkey: string; npub: string }) {
             <h1 className="break-words font-display text-2xl font-bold leading-snug sm:text-3xl [overflow-wrap:anywhere]">
               {name}
             </h1>
-            <p className="mt-1 truncate font-mono text-[11px] text-muted-foreground">
-              {npub.slice(0, 20)}…
+            <p className="mt-1 break-all font-mono text-[11px] text-muted-foreground">
+              {npub}
             </p>
           </div>
         </div>
