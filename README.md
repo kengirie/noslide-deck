@@ -2,7 +2,7 @@
 
 English | [日本語](README.ja.md)
 
-Share slides on Nostr. When you upload a PDF, it is published as a NIP-5A nsite. The nsite URL is both the share page and the app: readers can flip through the slides in the browser, and when the link is pasted somewhere, it shows a card of the first slide.
+Share slides on Nostr. When you upload a PDF, it is published as a [NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) nsite. The nsite URL is both the share page and the app: readers can flip through the slides in the browser, and when the link is pasted somewhere, it shows a card of the first slide.
 
 
 **GH pages**: <https://kengirie.github.io/noslide-deck/>
@@ -26,7 +26,7 @@ To show a link-preview (OG) card, you usually need a **server** that renders HTM
   └──────────────────────────────────────┘
 ```
 
-noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host (NIP-5A nsite). So the smart part moves to the upload client, and it runs only once:
+noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host ([NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) nsite). So the smart part moves to the upload client, and it runs only once:
 
 ```text
   ┌──────────────────────────────────────┐
@@ -47,7 +47,7 @@ noslide deck does not use a server. It makes this HTML **in the browser when you
   └──────────────────────────────────────┘
 ```
 
-So one URL works for both a crawler and a person. In detail, a deck is an addressable **kind `35891`** event ([NIP.md](NIP.md)). It keeps every file by URL *and* by hash, and it is served as its own NIP-5A **named site (kind `35128`)** at `https://<npubB36><deck-id>.<gateway>/`. Comments (NIP-22), reactions (NIP-25), and profiles are all plain Nostr.
+So one URL works for both a crawler and a person. In detail, a deck is an addressable **kind `35891`** event ([NIP.md](NIP.md)). It keeps every file by URL *and* by hash, and it is served as its own [NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) **named site (kind `35128`)** at `https://<npubB36><deck-id>.<gateway>/`. Comments (NIP-22), reactions (NIP-25), and profiles are all plain Nostr.
 
 Local setup and deployment live in [DEVELOPMENT.md](DEVELOPMENT.md).
 
