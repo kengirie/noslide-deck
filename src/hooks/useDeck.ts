@@ -47,7 +47,13 @@ export function useDeck(pubkey: string | undefined, identifier: string | undefin
         .map(parseDeckEvent)
         .filter((deck): deck is Deck => deck !== null)
         .sort((a, b) => b.event.created_at - a.event.created_at);
-      return decks[0] ?? null;
+      if (decks[0]) return decks[0];
+      // A deck nsite bakes its event in. If relays are behind or don't have it,
+      // keep showing that pinned snapshot instead of flashing "not found" — even
+      // a forced refetch (NostrProvider invalidates on mount) can't null it out.
+      // A NIP-09 deletion still wins, so an author can retract a deck.
+      if (initialDeck && !coveredByDeletion(initialDeck.event, deletions)) return initialDeck;
+      return null;
     },
   });
 }
