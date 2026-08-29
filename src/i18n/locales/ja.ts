@@ -7,9 +7,6 @@ export const ja: Translation = {
     name: 'noslide deck',
     tagline: 'Nostrのスライド共有',
   },
-  nav: {
-    newDeck: '新規デッキ',
-  },
   hero: {
     eyebrow: 'Nostrのスライド共有',
     title: 'PDFを置くだけ。共有できるスライドページに。',
