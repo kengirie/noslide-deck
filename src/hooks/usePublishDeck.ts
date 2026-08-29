@@ -218,6 +218,10 @@ export function usePublishDeck() {
 
           const deckPaths: SitePath[] = [
             { path: '/index.html', sha256: htmlUpload.sha256 },
+            // Serve the SPA entry at /upload too: a deck's named site has no SPA
+            // fallback (unknown paths 404 on the gateway), so a cold load or
+            // reload of the in-app upload route needs its own manifest path.
+            { path: '/upload', sha256: htmlUpload.sha256 },
             { path: '/embed.html', sha256: embedUpload.sha256 },
             { path: '/thumb.jpg', sha256: thumbUpload.sha256 },
             ...pageUploads.map((page, i) => ({

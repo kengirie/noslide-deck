@@ -22,6 +22,9 @@ export function AppRouter() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<RootRoute />} />
+        {/* Upload/publish page. Reachable on every host — including a deck's own
+            nsite, whose "/" boots the deck instead of the home/upload page. */}
+        <Route path="/upload" element={<Index />} />
         {/* Deck viewer: /<npub>/<deck-id> */}
         <Route path="/:npub/:deckId" element={<DeckPage />} />
         {/* NIP-19 route for npub1, note1, naddr1, nevent1, nprofile1 */}

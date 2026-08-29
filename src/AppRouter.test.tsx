@@ -8,7 +8,32 @@ vi.mock('./pages/DeckPage', () => ({
   ),
 }));
 
-import { RootRoute } from './AppRouter';
+import AppRouter, { RootRoute } from './AppRouter';
+
+describe('AppRouter routes', () => {
+  afterEach(() => {
+    window.history.pushState({}, '', '/');
+  });
+
+  it('serves the upload page at /upload, even on a deck-tagged host', () => {
+    // A deck's own nsite bakes deck:* meta, but /upload must still be the
+    // upload page (RootRoute only boots the deck at "/").
+    for (const [name, content] of [
+      ['deck:npub', 'npub1abc'],
+      ['deck:id', 'my-talk'],
+    ]) {
+      const el = document.createElement('meta');
+      el.setAttribute('name', name);
+      el.setAttribute('content', content);
+      document.head.appendChild(el);
+    }
+    window.history.pushState({}, '', '/upload');
+    render(<AppRouter />);
+    expect(screen.getByText('HOME_UPLOAD_PAGE')).toBeInTheDocument();
+    expect(screen.queryByText(/DECK_PAGE/)).not.toBeInTheDocument();
+    document.head.querySelectorAll('meta[name^="deck:"]').forEach((el) => el.remove());
+  });
+});
 
 describe('RootRoute (deck-site boot)', () => {
   afterEach(() => {

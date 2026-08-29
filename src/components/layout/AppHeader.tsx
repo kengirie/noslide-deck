@@ -1,6 +1,8 @@
+import { Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LoginArea } from '@/components/auth/LoginArea';
+import { Button } from '@/components/ui/button';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -22,6 +24,12 @@ export function AppHeader() {
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-1 sm:gap-3">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/upload">
+              <Upload className="size-4" aria-hidden />
+              <span className="hidden sm:inline">{t('nav.newDeck')}</span>
+            </Link>
+          </Button>
           <LanguageToggle />
           <ThemeToggle />
           <LoginArea />

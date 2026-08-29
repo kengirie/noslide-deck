@@ -3,6 +3,9 @@ export const en = {
     name: 'noslide deck',
     tagline: 'Slides on Nostr',
   },
+  nav: {
+    newDeck: 'New deck',
+  },
   hero: {
     eyebrow: 'Slides on Nostr',
     title: 'Drop a PDF, get a slide page worth sharing.',
