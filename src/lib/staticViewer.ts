@@ -1,3 +1,5 @@
+import type { NostrEvent } from '@nostrify/nostrify';
+
 /**
  * Publish-time HTML baked into a deck's own nsite.
  *
@@ -69,6 +71,12 @@ export interface DeckAppHtmlInput {
   scripts: string[];
   /** App entry stylesheets from site-assets.json, e.g. "/assets/index-*.css". */
   styles: string[];
+  /**
+   * The signed deck event (kind 35891), baked in so the app hydrates the deck
+   * from the page itself — no relay round-trip, no cold-start "not found" flash.
+   * A deck nsite is a pinned snapshot, so this baked copy IS its canonical deck.
+   */
+  deckEvent?: NostrEvent;
 }
 
 /**
@@ -84,6 +92,11 @@ export function renderDeckAppHtml(input: DeckAppHtmlInput): string {
   const pages = input.pagePaths.map(assertRelativePath);
   const scripts = input.scripts.map(assertAssetRef);
   const styles = input.styles.map(assertAssetRef);
+  // Non-executable data in an attribute — safe under `script-src 'self'`, same
+  // reason the deck identity travels as meta tags rather than an inline script.
+  const deckEventMeta = input.deckEvent
+    ? `<meta name="deck:event" content="${escapeHtml(JSON.stringify(input.deckEvent))}">`
+    : '';
 
   if (!/^npub1[a-z0-9]+$/.test(input.npub)) throw new Error(`Refusing bad npub: ${input.npub}`);
   if (!/^[a-z0-9-]{1,13}$/.test(input.deckId)) throw new Error(`Refusing bad deckId: ${input.deckId}`);
@@ -121,6 +134,7 @@ export function renderDeckAppHtml(input: DeckAppHtmlInput): string {
 <meta name="twitter:image" content="${ogImage}">
 <meta name="deck:npub" content="${escapeHtml(input.npub)}">
 <meta name="deck:id" content="${escapeHtml(input.deckId)}">
+${deckEventMeta}
 ${styleTags}
 ${scriptTags}
 </head>

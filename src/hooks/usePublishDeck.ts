@@ -151,7 +151,7 @@ export function usePublishDeck() {
           hashtags: parseHashtagInput(meta.hashtags),
           publishedAt,
         });
-        await publishEvent(template);
+        const deckEvent = await publishEvent(template);
 
         const npub = nip19.npubEncode(user.pubkey);
         const result: PublishResult = {
@@ -193,6 +193,7 @@ export function usePublishDeck() {
             pagePaths,
             scripts: siteAssets.scripts,
             styles: siteAssets.styles,
+            deckEvent,
           });
           const htmlUpload = await uploadToServers({
             blob: new Blob([html], { type: 'text/html' }),

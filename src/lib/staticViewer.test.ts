@@ -35,6 +35,33 @@ describe('renderDeckAppHtml', () => {
     expect(renderDeckAppHtml(base)).toContain("script-src 'self'");
   });
 
+  it('bakes the signed deck event for instant hydration when provided', () => {
+    const deckEvent = {
+      id: 'a'.repeat(64),
+      pubkey: 'b'.repeat(64),
+      kind: 35891,
+      created_at: 1700000000,
+      content: '',
+      tags: [['d', 'my-talk'], ['title', 'My Talk']],
+      sig: 'c'.repeat(128),
+    };
+    const html = renderDeckAppHtml({ ...base, deckEvent });
+    // Round-trips through the meta attribute back to the original event.
+    const match = html.match(/<meta name="deck:event" content="([^"]*)">/);
+    expect(match).not.toBeNull();
+    const decoded = match![1]
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&amp;', '&');
+    expect(JSON.parse(decoded)).toEqual(deckEvent);
+  });
+
+  it('omits the deck:event meta when no event is baked', () => {
+    expect(renderDeckAppHtml(base)).not.toContain('name="deck:event"');
+  });
+
   it('rejects a cross-origin or non-asset script ref', () => {
     expect(() => renderDeckAppHtml({ ...base, scripts: ['https://evil.example/x.js'] })).toThrow();
     expect(() => renderDeckAppHtml({ ...base, styles: ['/assets/../etc/passwd'] })).toThrow();

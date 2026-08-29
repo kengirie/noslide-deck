@@ -8,6 +8,7 @@ export const GATEWAY_DOMAIN = 'nwb.tf';
 /** Extra relays the gateway ecosystem uses to look up user data (10063 etc.). */
 export const LOOKUP_RELAYS = ['wss://user.kindpag.es/', 'wss://purplepag.es/'];
 
+import type { NostrEvent } from '@nostrify/nostrify';
 import { pubkeyToBase36 } from './nsite';
 
 /**
@@ -67,6 +68,25 @@ export function getDeckSiteTarget(): { npub: string; deckId: string } | null {
   const target = typeof window !== 'undefined' ? window.__DECK__ : undefined;
   if (target && typeof target.npub === 'string' && typeof target.deckId === 'string') {
     return target;
+  }
+  return null;
+}
+
+/**
+ * The signed deck event (kind 35891) baked into a deck nsite's index.html by
+ * `renderDeckAppHtml`. Lets the app hydrate the deck instantly instead of
+ * waiting on a cold relay query. Returns null on the normal app hosts (no such
+ * meta) or if the baked JSON is malformed — callers then fall back to relays.
+ */
+export function getBakedDeckEvent(): NostrEvent | null {
+  if (typeof document === 'undefined') return null;
+  const raw = document.querySelector('meta[name="deck:event"]')?.getAttribute('content');
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') return parsed as NostrEvent;
+  } catch {
+    // Malformed baked event — fall back to fetching from relays.
   }
   return null;
 }
