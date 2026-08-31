@@ -39,7 +39,7 @@ jobs:
 
       - name: Install dependencies and build
         env:
-          VITE_BASE: /noslide-deck/
+          VITE_BASE: /rostrum/
         run: |
           npm install
           npm run build

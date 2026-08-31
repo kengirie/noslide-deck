@@ -4,7 +4,7 @@
 
 Nostr でスライドを共有できます。PDF をアップロードすると、[NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) の nsite として公開されます。その nsite の URL が共有ページであり、そのままアプリでもあります。閲覧者はブラウザでスライドをめくれて、リンクをどこかに貼ると最初のスライドのカードが表示されます。
 
-**GH pages**: <https://kengirie.github.io/noslide-deck/>
+**GH pages**: <https://kengirie.github.io/rostrum/>
 **Nsite**: <https://39ohbfiu1ziyvxhwqdklupc0yrc4mcgmjpfe3w6vvz1gp6wg7hslides.nwb.tf/>
 
 ## 仕組み — サーバーのないサーバーサイドレンダリング

@@ -2,7 +2,7 @@
 
 `draft` `optional`
 
-This document describes the event format used by [Rostrum](https://github.com/kengirie/noslide-deck) to publish presentation slide decks on Nostr.
+This document describes the event format used by [Rostrum](https://github.com/kengirie/rostrum) to publish presentation slide decks on Nostr.
 
 ## Deck event (kind `35891`)
 

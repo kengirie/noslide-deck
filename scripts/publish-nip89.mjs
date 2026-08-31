@@ -11,7 +11,7 @@
 import { finalizeEvent, nip19 } from 'nostr-tools';
 
 const DECK_KIND = 35891;
-const APP_URL = process.env.APP_URL ?? 'https://kengirie.github.io/nostr-slide-deck';
+const APP_URL = process.env.APP_URL ?? 'https://kengirie.github.io/rostrum';
 const RELAYS = [
   'wss://relay.ditto.pub/',
   'wss://relay.dreamith.to/',
@@ -37,7 +37,7 @@ const handler = finalizeEvent({
     website: APP_URL,
   }),
   tags: [
-    ['d', 'nostr-slide-deck'],
+    ['d', 'rostrum'],
     ['k', String(DECK_KIND)],
     ['web', `${APP_URL}/<bech32>`, 'naddr'],
     ['alt', 'Handler information for the Rostrum app'],
@@ -50,7 +50,7 @@ const recommendation = finalizeEvent({
   content: '',
   tags: [
     ['d', String(DECK_KIND)],
-    ['a', `31990:${handler.pubkey}:nostr-slide-deck`, RELAYS[0], 'web'],
+    ['a', `31990:${handler.pubkey}:rostrum`, RELAYS[0], 'web'],
     ['alt', `Recommended app for kind ${DECK_KIND} slide decks`],
   ],
 }, sk);
@@ -68,4 +68,4 @@ for (const event of [handler, recommendation]) {
   })));
   console.log(`kind ${event.kind}:`, results.join(' | '));
 }
-console.log('handler naddr:', nip19.naddrEncode({ kind: 31990, pubkey: handler.pubkey, identifier: 'nostr-slide-deck' }));
+console.log('handler naddr:', nip19.naddrEncode({ kind: 31990, pubkey: handler.pubkey, identifier: 'rostrum' }));

@@ -11,7 +11,7 @@ import { sha256Hex, uploadToServers } from './blossomMulti';
  *      e.g. the "slides" nsite or a local `vite preview`) — its own
  *      `site-assets.json` is same-origin and always current.
  *   2. The canonical "slides" nsite via each gateway — the fallback used when the
- *      publisher runs a sub-path build (e.g. GitHub Pages under /noslide-deck/,
+ *      publisher runs a sub-path build (e.g. GitHub Pages under /rostrum/,
  *      whose baked base would break routing at a deck root).
  *
  * The deck lists those assets in its own NIP-5A manifest so the gateway serves

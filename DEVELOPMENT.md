@@ -20,7 +20,7 @@ NSEC=nsec1... node scripts/publish-nip89.mjs
 
 ## Deployment
 
-Push to `main` and `deploy.yml` ships the app to GitHub Pages (base `/noslide-deck/`).
+Push to `main` and `deploy.yml` ships the app to GitHub Pages (base `/rostrum/`).
 
 Each published deck also mirrors the app into its own nsite, so a deck's share URL *is* an app URL — open `https://<npubB36><deck-id>.<gateway>/` and you get the full app booted into that deck. Those deck sites need a root-base build of the app, published as the "slides" nsite via `nsite.yml` (base `/`). Publishing from GitHub Pages pulls the app assets from there, so **after any app change, redeploy the "slides" nsite** — cut a Release, or run it by hand:
 
