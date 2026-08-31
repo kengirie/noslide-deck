@@ -19,8 +19,15 @@ export function AppHeader() {
       <div className="container flex min-h-16 flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2">
         <Link to={homeHref} className="flex min-w-0 items-center gap-3">
           <span className="min-w-0">
-            <span className="block whitespace-nowrap font-display text-xl font-bold leading-none tracking-wide">
-              {t('app.name')}
+            {/* Wordmark: the middle "str" is set in caps so the name reads
+                "roSTRum" — a wink at nostr. aria-label keeps it spoken as one word. */}
+            <span
+              className="block whitespace-nowrap font-display text-xl font-bold leading-none tracking-wide"
+              aria-label={t('app.name')}
+            >
+              <span aria-hidden="true">
+                ro<span className="uppercase tracking-wider">str</span>um
+              </span>
             </span>
             <span className="mt-1 hidden font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground sm:block">
               {t('app.tagline')}
