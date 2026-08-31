@@ -22,7 +22,7 @@ i18n
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'kamishibai:lang',
+      lookupLocalStorage: 'rostrum:lang',
     },
   });
 

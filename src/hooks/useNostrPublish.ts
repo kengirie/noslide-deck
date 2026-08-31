@@ -21,10 +21,10 @@ export function useNostrPublish(): UseMutationResult<
       if (user) {
         const tags = t.tags ?? [];
 
-        // Tag events with the app name ("via noslide-deck") rather than the
+        // Tag events with the app name ("via rostrum") rather than the
         // deploy host, so likes/comments read the same on GitHub Pages or nsite.
         if (location.protocol === "https:" && !tags.some(([name]) => name === "client")) {
-          tags.push(["client", "noslide-deck"]);
+          tags.push(["client", "rostrum"]);
         }
 
         const event = await user.signer.signEvent({

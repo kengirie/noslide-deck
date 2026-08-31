@@ -1,4 +1,4 @@
-# noslide deck
+# Rostrum
 
 [English](README.md) | 日本語
 
@@ -24,7 +24,7 @@ Nostr でスライドを共有できます。PDF をアップロードすると�
   └──────────────────────────────────────┘
 ```
 
-noslide deck はサーバーを使いません。この HTML を**公開時にブラウザの中で生成**し、シンプルな静的ホスト（デッキ自身の [NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) nsite。[Blossom](https://github.com/hzrd149/blossom) 上に SHA-256 で保存）に置きます。つまり賢い部分は公開クライアントに移り、しかも一度だけ動きます:
+Rostrum はサーバーを使いません。この HTML を**公開時にブラウザの中で生成**し、シンプルな静的ホスト（デッキ自身の [NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) nsite。[Blossom](https://github.com/hzrd149/blossom) 上に SHA-256 で保存）に置きます。つまり賢い部分は公開クライアントに移り、しかも一度だけ動きます:
 
 ```text
   ┌──────────────────────────────────────┐

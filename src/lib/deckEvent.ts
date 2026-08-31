@@ -108,7 +108,7 @@ export function buildDeckEvent(input: DeckEventInput): DeckEventTemplate {
 
   tags.push([
     'alt',
-    `Slide deck "${input.title.trim()}" (${input.pages.length} pages), published with noslide deck`,
+    `Slide deck "${input.title.trim()}" (${input.pages.length} pages), published with Rostrum`,
   ]);
 
   return { kind: DECK_KIND, content: input.summary?.trim() ?? '', tags };

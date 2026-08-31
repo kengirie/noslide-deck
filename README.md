@@ -1,4 +1,4 @@
-# noslide deck
+# Rostrum
 
 English | [日本語](README.ja.md)
 
@@ -26,7 +26,7 @@ To show a link-preview (OG) card, you usually need a **server** that renders HTM
   └──────────────────────────────────────┘
 ```
 
-noslide deck does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host ([NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) nsite). So the smart part moves to the upload client, and it runs only once:
+Rostrum does not use a server. It makes this HTML **in the browser when you publish**, and puts it on a simple static host ([NIP-5A](https://github.com/nostr-protocol/nips/blob/master/5A.md) nsite). So the smart part moves to the upload client, and it runs only once:
 
 ```text
   ┌──────────────────────────────────────┐
