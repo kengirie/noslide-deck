@@ -74,7 +74,10 @@ export async function fetchSiteAssets(signal?: AbortSignal): Promise<SiteAssets>
   let lastError: unknown;
   for (const source of assetSources()) {
     try {
-      const response = await fetch(source.manifestUrl, { signal });
+      // `no-store`: gateways serve site-assets.json with `max-age=3600`, so a
+      // copy cached before a "slides" redeploy would otherwise make a freshly
+      // published deck pin the OLD app build (e.g. a stale brand in the header).
+      const response = await fetch(source.manifestUrl, { signal, cache: 'no-store' });
       if (!response.ok) {
         lastError = new Error(`${response.status} from ${source.manifestUrl}`);
         continue;
@@ -125,7 +128,9 @@ export async function ensureAppAssets(opts: {
     const present = await Promise.all(servers.map((server) => blobExists(server, asset.sha256, signal)));
     if (present.some(Boolean)) continue;
 
-    const response = await fetch(new URL(asset.path.replace(/^\//, ''), assetBase), { signal });
+    // `no-store` for the same reason as the manifest fetch: never mirror a
+    // browser-cached copy of a pre-redeploy asset into the deck.
+    const response = await fetch(new URL(asset.path.replace(/^\//, ''), assetBase), { signal, cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Failed to copy app asset ${asset.path}: ${response.status}`);
     }
