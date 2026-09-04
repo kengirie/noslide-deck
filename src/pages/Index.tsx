@@ -69,7 +69,8 @@ const Index = () => {
   const pdf = usePdfPages();
 
   useSeoMeta({
-    title: `${t('app.name')} — ${t('app.tagline')}`,
+    // Keep the home tab to just the brand name; deck/profile tabs still suffix it.
+    title: t('app.name'),
     description: t('hero.lead'),
   });
 
