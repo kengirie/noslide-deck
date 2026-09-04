@@ -1,6 +1,6 @@
 export const en = {
   app: {
-    name: 'Rostrum',
+    name: 'rostrum',
     tagline: 'Slides on Nostr',
   },
   hero: {

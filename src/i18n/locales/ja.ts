@@ -4,7 +4,7 @@ type Translation = { [K in keyof typeof en]: Record<keyof (typeof en)[K], string
 
 export const ja: Translation = {
   app: {
-    name: 'Rostrum',
+    name: 'rostrum',
     tagline: 'Nostrのスライド共有',
   },
   hero: {
