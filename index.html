@@ -8,8 +8,20 @@
         <title>Rostrum</title>
         <meta name="description" content="Drop a PDF and get a shareable slide page on Nostr. Readers flip through the pages right in the browser.">
         <meta property="og:type" content="website">
-        <meta property="og:title" content="Rostrum">
+        <meta property="og:site_name" content="Rostrum">
+        <meta property="og:title" content="Rostrum — Slides on Nostr">
         <meta property="og:description" content="Drop a PDF and get a shareable slide page on Nostr. Readers flip through the pages right in the browser.">
+        <!-- One index.html ships to GitHub Pages and the "slides" nsite across several gateways, so og:url/og:image point at one always-up absolute host (the canonical GitHub Pages deploy) instead of a per-origin path. -->
+        <meta property="og:url" content="https://kengirie.github.io/rostrum/">
+        <meta property="og:image" content="https://kengirie.github.io/rostrum/og.jpg">
+        <meta property="og:image:type" content="image/jpeg">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="roSTRum — drop a PDF, get a slide page worth sharing.">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Rostrum — Slides on Nostr">
+        <meta name="twitter:description" content="Drop a PDF and get a shareable slide page on Nostr. Readers flip through the pages right in the browser.">
+        <meta name="twitter:image" content="https://kengirie.github.io/rostrum/og.jpg">
     </head>
     <body>
         <div id="root"></div>
