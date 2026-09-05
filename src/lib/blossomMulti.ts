@@ -71,10 +71,12 @@ export async function uploadToServers(opts: UploadToServersOptions): Promise<Blo
 
   // One BUD-02 auth event reused for every server (same blob hash).
   // Generous expiration: large PDFs upload slowly.
+  // created_at sits 60s in the past: servers with zero clock-skew tolerance
+  // (e.g. blossoML) reject events even a second ahead of their own clock.
   const auth = await signer.signEvent({
     kind: 24242,
     content: `Upload ${name}`,
-    created_at: now,
+    created_at: now - 60,
     tags: [
       ['t', 'upload'],
       ['x', sha256],
@@ -148,10 +150,11 @@ export async function deleteFromServers(opts: DeleteFromServersOptions): Promise
   if (hashes.length === 0) return [];
   const now = Math.floor(Date.now() / 1000);
 
+  // created_at backdated 60s for the same clock-skew reason as uploadToServers
   const auth = await signer.signEvent({
     kind: 24242,
     content: reason,
-    created_at: now,
+    created_at: now - 60,
     tags: [
       ['t', 'delete'],
       ...hashes.map((sha256) => ['x', sha256]),
